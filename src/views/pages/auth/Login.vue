@@ -41,12 +41,12 @@ const getUserData = async () => {
   try {
     const response = await apiService.get('auth/users/me/');
     const userData = response.data;
+    authStore.setUser(userData)
     // Do something with the user data, such as storing it in a Vuex store
-    console.log('User Data:', userData);
   } catch (error) {
     console.error('Error fetching user data:', error);
-    router.push('/');
   }
+  router.push('/');
 };
 
 

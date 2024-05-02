@@ -1,8 +1,11 @@
 <script setup>
 import { onMounted, reactive, ref, watch } from 'vue';
 import { ProductService } from '@/service/ProductService';
+import { useLayout } from '@/layout/composables/layout';
+import { useAuthStore } from '@/store/authStore'; // Import your auth store
 
-
+const { isDarkTheme } = useLayout();
+const authStore = useAuthStore();
 const products = ref(null);
 const lineData = reactive({
     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -113,6 +116,9 @@ watch(
 </script>
 
 <template>
+    <div class="py-4 text-xl font-bold">
+        Welcome {{ authStore.user.full_name }}
+    </div>
     <div class="grid">
         <div class="col-12 lg:col-6 xl:col-3">
             <div class="card mb-0">

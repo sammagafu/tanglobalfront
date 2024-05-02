@@ -2,12 +2,15 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/store/authStore';
 
 const { layoutConfig, onMenuToggle } = useLayout();
 
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 const router = useRouter();
+const authStore = useAuthStore();
+
 
 onMounted(() => {
     bindOutsideClickListener();
@@ -64,7 +67,7 @@ const isOutsideClicked = (event) => {
     <div class="layout-topbar">
         <router-link to="/" class="layout-topbar-logo">
             <img :src="logoUrl" alt="logo" />
-            <span>SAKAI</span>
+            <span>TanGlobal</span>
         </router-link>
 
         <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">

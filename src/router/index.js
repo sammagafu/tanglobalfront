@@ -12,7 +12,7 @@ const router = createRouter({
                 {
                     path: '/',
                     name: 'dashboard',
-                    component: () => import('@/views/Dashboard.vue'),
+                    component: () => import('@/views/pages/dashboard/Dashboard.vue'),
                     meta: {
                         requiresAuth: true // Add meta field for authentication guard
                       }
