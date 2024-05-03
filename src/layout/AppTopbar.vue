@@ -66,8 +66,8 @@ const isOutsideClicked = (event) => {
 <template>
     <div class="layout-topbar">
         <router-link to="/" class="layout-topbar-logo">
-            <img :src="logoUrl" alt="logo" />
-            <span>TanGlobal</span>
+            <img src="@/assets/branding/favicon.svg" alt="logo" />
+            <span>Tanglobal</span>
         </router-link>
 
         <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">

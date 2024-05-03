@@ -148,6 +148,40 @@ const router = createRouter({
             ]
         },
         {
+            path:'/cargo',
+            name:'cargo-index',
+            component: AppLayout,
+            children :[
+                {
+                    path: '',
+                    name: 'cargo-home',
+                    component: () => import('@/views/pages/cargo/CargoManage.vue')
+                },
+                {
+                    path: 'create',
+                    name: 'cargo-create',
+                    component: () => import('@/views/pages/cargo/CreateCargo.vue')
+                },
+            ]
+        },
+        {
+            path:'/fleet',
+            name:'fleet-index',
+            component: AppLayout,
+            children :[
+                {
+                    path: '',
+                    name: 'fleet-home',
+                    component: () => import('@/views/pages/fleet/FleetManage.vue')
+                },
+                {
+                    path: 'create',
+                    name: 'fleet-create',
+                    component: () => import('@/views/pages/fleet/CreateFleet.vue')
+                },
+            ]
+        },
+        {
             path: '/landing',
             name: 'landing',
             component: () => import('@/views/pages/Landing.vue')
@@ -172,7 +206,17 @@ const router = createRouter({
             path: '/auth/error',
             name: 'error',
             component: () => import('@/views/pages/auth/Error.vue')
-        }
+        },
+        {
+            path: '/auth/register',
+            name: 'register',
+            component: () => import('@/views/pages/auth/Register.vue')
+        },
+        {
+            path: '/auth/forgot-password/',
+            name: 'forgotpassword',
+            component: () => import('@/views/pages/auth/ForgotPassword.vue')
+        },
     ]
 });
 

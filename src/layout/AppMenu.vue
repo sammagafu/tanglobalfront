@@ -12,17 +12,17 @@ const model = ref([
     {
         label: 'Cargo',
         icon: 'pi pi-fw pi-briefcase',
-        to: '/pages',
+        to: '/cargo',
         items: [
             {
                 label: 'Register Cargo',
                 icon: 'pi pi-fw pi-inbox',
-                to: '/landing'
+                to: '/cargo'
             },
             {
                 label: 'My Cargos',
                 icon: 'pi pi-fw pi-box',
-                to: '/pages/crud'
+                to: '/cargo/create'
             },
         ]
     },
@@ -35,12 +35,12 @@ const model = ref([
             {
                 label: 'My Fleet',
                 icon: 'pi pi-fw pi-car',
-                to: '/landing'
+                to: '/fleet'
             },
             {
                 label: 'Manage Fleet',
                 icon: 'pi pi-fw pi-cog',
-                to: '/pages/crud'
+                to: '/fleet/create'
             },
         ]
     },

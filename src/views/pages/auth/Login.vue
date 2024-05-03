@@ -19,6 +19,7 @@ const logoUrl = computed(() => {
     return `/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
 });
 
+
 const login = async () => {
   try {
     const response = await apiService.post('auth/token/', {
@@ -55,14 +56,9 @@ const getUserData = async () => {
 <template>
     <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
         <div class="flex flex-column align-items-center justify-content-center">
-            <img :src="logoUrl" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" />
+            <img src="@/assets/branding/logo-row.svg" alt="Tan Global" class="mb-2 w-16rem flex-shrink-0" />
             <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                 <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px">
-                    <div class="text-center mb-5">
-                        <img src="/demo/images/login/avatar.png" alt="Image" height="50" class="mb-3" />
-                        <div class="text-900 text-3xl font-medium mb-3">Welcome, Isabel!</div>
-                        <span class="text-600 font-medium">Sign in to continue</span>
-                    </div>
 
                     <div>
                         <form @submit.prevent="login">
@@ -77,10 +73,14 @@ const getUserData = async () => {
                                 <Checkbox v-model="rememberMe" id="rememberme1" binary class="mr-2"></Checkbox>
                                 <label for="rememberme1">Remember me</label>
                             </div>
-                            <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">Forgot password?</a>
+                            <router-link :to="{name:'forgotpassword'}" class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">Forgot Password?</router-link>
                         </div>
                         <Button label="Sign In" class="w-full p-3 text-xl" type="submit"></Button>
                         </form>
+                        <div class="py-4 flex">
+                          <div class="">Dont have an account?</div>
+                          <router-link :to="{name:'register'}" class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">Create Account</router-link>
+                        </div>
                     </div>
                 </div>
             </div>
