@@ -15,11 +15,6 @@ const model = ref([
         to: '/cargo',
         items: [
             {
-                label: 'Register Cargo',
-                icon: 'pi pi-fw pi-inbox',
-                to: '/cargo'
-            },
-            {
                 label: 'My Cargos',
                 icon: 'pi pi-fw pi-box',
                 to: '/cargo/create'
@@ -36,11 +31,6 @@ const model = ref([
                 label: 'My Fleet',
                 icon: 'pi pi-fw pi-car',
                 to: '/fleet'
-            },
-            {
-                label: 'Manage Fleet',
-                icon: 'pi pi-fw pi-cog',
-                to: '/fleet/create'
             },
         ]
     },

@@ -172,7 +172,7 @@ const router = createRouter({
                 {
                     path: '',
                     name: 'fleet-home',
-                    component: () => import('@/views/pages/fleet/FleetManage.vue')
+                    component: () => import('@/views/pages/fleet/CreateFleet.vue')
                 },
                 {
                     path: 'create',
@@ -226,7 +226,7 @@ router.beforeEach((to, from, next) => {
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   
     if (requiresAuth && !isAuthenticated) {
-      next({ name: 'Login' }); // Redirect to login if route requires authentication and user is not authenticated
+      next({ name: 'login' }); // Redirect to login if route requires authentication and user is not authenticated
     } else {
       next(); // Continue to the requested route
     }

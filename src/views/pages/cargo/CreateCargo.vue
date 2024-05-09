@@ -1,358 +1,514 @@
 <script setup>
-import { onMounted, reactive, ref, watch } from 'vue';
-import { ProductService } from '@/service/ProductService';
-import { useLayout } from '@/layout/composables/layout';
+import { FilterMatchMode } from 'primevue/api';
+import { ref, onMounted, onBeforeMount } from 'vue';
+import { ProductService } from '@/services/ProductService';
+import { useToast } from 'primevue/usetoast';
 import { useAuthStore } from '@/store/authStore'; // Import your auth store
+import apiService from '@/services/apiService'; // Import your API service
+const toast = useToast();
 
-const { isDarkTheme } = useLayout();
-const authStore = useAuthStore();
 const products = ref(null);
-const lineData = reactive({
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [
-        {
-            label: 'First Dataset',
-            data: [65, 59, 80, 81, 56, 55, 40],
-            fill: false,
-            backgroundColor: '#2f4860',
-            borderColor: '#2f4860',
-            tension: 0.4
-        },
-        {
-            label: 'Second Dataset',
-            data: [28, 48, 40, 19, 86, 27, 90],
-            fill: false,
-            backgroundColor: '#00bb7e',
-            borderColor: '#00bb7e',
-            tension: 0.4
+const productDialog = ref(false);
+const deleteProductDialog = ref(false);
+const deleteProductsDialog = ref(false);
+const product = ref({});
+const selectedProducts = ref(null);
+const dt = ref(null);
+const filters = ref({});
+const submitted = ref(false);
+const cargotype = ref({})
+
+// form fields
+// Define ref variables for form fields
+const cargoname = ref('');
+const weight = ref();
+const dimensions = ref('');
+const selectedCargoType = ref('');
+const flagile = ref('');
+const temperatureSensitive = ref('');
+const handlingInstruction = ref('');
+const origin = ref('');
+const destination = ref('');
+const receiverName = ref('');
+const receiverContact = ref('');
+const cargoDocumentName = ref('');
+const cargoDocument = ref(null);
+
+
+const handleFileUpload = (event) => {
+      cargoDocument.value = event.target.files[0];
+    };
+
+const saveProduct = () => {
+    submitted.value = true;
+
+      // Check if required fields are filled not working function
+      
+  if (!cargoname.value || !weight.value || !dimensions.value || !selectedCargoType.value || !flagile.value || !temperatureSensitive.value || !handlingInstruction.value || !origin.value || !destination.value || !receiverName.value || !receiverContact.value || !cargoDocumentName.value || !cargoDocument.value) {
+    console.error('All fields are required.');
+    return;
+  }
+  const cargoData = {
+    cargo_type: { name: cargotype.value.id },
+    weight: Number(weight.value),
+    dimensions: dimensions.value,
+    cargo: cargotype.value,
+    fragile: flagile.value,
+    temperature_sensitive: temperatureSensitive.value,
+    special_handling_instructions: handlingInstruction.value,
+    origin: origin.value,
+    destination: destination.value,
+    receiver_name: receiverName.value,
+    receiver_contact: receiverContact.value,
+    cargo_document: {
+      documentName: cargoDocumentName.value,
+      documentFile: cargoDocument.value
+    }
+    
+  }
+  console.log(cargoData);
+      apiService.post('cargo/', cargoData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
         }
-    ]
-});
-const items = ref([
-    { label: 'Add New', icon: 'pi pi-fw pi-plus' },
-    { label: 'Remove', icon: 'pi pi-fw pi-minus' }
+    })
+
+    .then(response => {
+        console.log('Cargo data posted successfully:', response.data);
+        toast.add({ severity: 'success', summary: 'Successful', detail: 'Cargo data posted successfully', life: 3000 });
+        // Reset form fields after successful submission
+        cargoname.value = '';
+        weight.value = '';
+        dimensions.value = '';
+        flagile.value = false;
+        tempsensitive.value = false;
+        handlingInstruction.value = '';
+        origin.value = '';
+        destination.value = '';
+        receiverName.value = '';
+        receiverContact.value = '';
+        cargoDocumentName.value = '';
+        cargoDocument.value = '';
+        pickupdate.value = '';
+        deliveryDate.value = '';
+        selectedCargoType.value = null;
+    })
+    .catch(error => {
+        console.error('Error posting cargo data:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to post cargo data', life: 3000 });
+    });
+
+    // const payload = {
+    //     cargo_type: {
+    //         name: selectedCargoType.value.slug
+    //     },
+    //     cargo_document: {
+    //         documentName: cargoDocumentName.value,
+    //         documentFile: cargoDocument.value,
+    //     },
+    //     weight: weight.value,
+    //     dimensions: dimensions.value,
+    //     cargo: cargoname.value,
+    //     fragile: flagile.value,
+    //     temperature_sensitive: tempsensitive.value,
+    //     special_handling_instructions: handlingInstruction.value,
+    //     origin: origin.value,
+    //     destination: destination.value,
+    //     receiver_name: receiverName.value,
+    //     receiver_contact: receiverContact.value,
+    //     pickupdate: pickupdate.value,
+    //     delivery_date: deliveryDate.value
+    // };
+
+    // console.log(payload);
+
+    // apiService.post('cargo/', payload, {
+    //     headers: {
+    //         'Content-Type': 'multipart/form-data'
+    //     }
+    // })
+    // .then(response => {
+    //     console.log('Cargo data posted successfully:', response.data);
+    //     toast.add({ severity: 'success', summary: 'Successful', detail: 'Cargo data posted successfully', life: 3000 });
+    //     // Reset form fields after successful submission
+    //     cargoname.value = '';
+    //     weight.value = '';
+    //     dimensions.value = '';
+    //     flagile.value = false;
+    //     tempsensitive.value = false;
+    //     handlingInstruction.value = '';
+    //     origin.value = '';
+    //     destination.value = '';
+    //     receiverName.value = '';
+    //     receiverContact.value = '';
+    //     cargoDocumentName.value = '';
+    //     cargoDocument.value = '';
+    //     pickupdate.value = '';
+    //     deliveryDate.value = '';
+    //     selectedCargoType.value = null;
+    // })
+    // .catch(error => {
+    //     console.error('Error posting cargo data:', error);
+    //     toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to post cargo data', life: 3000 });
+    // });
+};
+
+
+// method to get all categories
+const getCategories = function () {
+	apiService.get('cargo/type')
+		.then(async (response) => {
+			console.log(response.data);
+			cargotype.value = await response.data;
+		})
+		.catch(error => {
+			console.log(error);
+		});
+};
+
+const statuses = ref([
+    { label: 'INSTOCK', value: 'instock' },
+    { label: 'LOWSTOCK', value: 'lowstock' },
+    { label: 'OUTOFSTOCK', value: 'outofstock' }
 ]);
-const lineOptions = ref(null);
+
 const productService = new ProductService();
 
-onMounted(() => {
-    productService.getProductsSmall().then((data) => (products.value = data));
-});
+const getBadgeSeverity = (inventoryStatus) => {
+    switch (inventoryStatus.toLowerCase()) {
+        case 'instock':
+            return 'success';
+        case 'lowstock':
+            return 'warning';
+        case 'outofstock':
+            return 'danger';
+        default:
+            return 'info';
+    }
+};
 
+onBeforeMount(() => {
+    initFilters();
+    getCategories();
+    
+});
+onMounted(() => {
+    productService.getProducts().then((data) => (products.value = data));
+});
 const formatCurrency = (value) => {
     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 };
-const applyLightTheme = () => {
-    lineOptions.value = {
-        plugins: {
-            legend: {
-                labels: {
-                    color: '#495057'
-                }
-            }
-        },
-        scales: {
-            x: {
-                ticks: {
-                    color: '#495057'
-                },
-                grid: {
-                    color: '#ebedef'
-                }
-            },
-            y: {
-                ticks: {
-                    color: '#495057'
-                },
-                grid: {
-                    color: '#ebedef'
-                }
-            }
-        }
-    };
+
+const openNew = () => {
+    product.value = {};
+    submitted.value = false;
+    productDialog.value = true;
 };
 
-const applyDarkTheme = () => {
-    lineOptions.value = {
-        plugins: {
-            legend: {
-                labels: {
-                    color: '#ebedef'
-                }
-            }
-        },
-        scales: {
-            x: {
-                ticks: {
-                    color: '#ebedef'
-                },
-                grid: {
-                    color: 'rgba(160, 167, 181, .3)'
-                }
-            },
-            y: {
-                ticks: {
-                    color: '#ebedef'
-                },
-                grid: {
-                    color: 'rgba(160, 167, 181, .3)'
-                }
-            }
-        }
-    };
+const hideDialog = () => {
+    productDialog.value = false;
+    submitted.value = false;
 };
 
-watch(
-    isDarkTheme,
-    (val) => {
-        if (val) {
-            applyDarkTheme();
-        } else {
-            applyLightTheme();
+
+
+const editProduct = (editProduct) => {
+    product.value = { ...editProduct };
+    productDialog.value = true;
+};
+
+const confirmDeleteProduct = (editProduct) => {
+    product.value = editProduct;
+    deleteProductDialog.value = true;
+};
+
+const deleteProduct = () => {
+    products.value = products.value.filter((val) => val.id !== product.value.id);
+    deleteProductDialog.value = false;
+    product.value = {};
+    toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
+};
+
+const findIndexById = (id) => {
+    let index = -1;
+    for (let i = 0; i < products.value.length; i++) {
+        if (products.value[i].id === id) {
+            index = i;
+            break;
         }
-    },
-    { immediate: true }
-);
+    }
+    return index;
+};
+
+const createId = () => {
+    let id = '';
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < 5; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return id;
+};
+
+const exportCSV = () => {
+    dt.value.exportCSV();
+};
+
+const confirmDeleteSelected = () => {
+    deleteProductsDialog.value = true;
+};
+const deleteSelectedProducts = () => {
+    products.value = products.value.filter((val) => !selectedProducts.value.includes(val));
+    deleteProductsDialog.value = false;
+    selectedProducts.value = null;
+    toast.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
+};
+
+const initFilters = () => {
+    filters.value = {
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+    };
+};
 </script>
-<template>
-    <div class="py-4 text-xl font-bold">
-    </div>
-    <div class="grid">
-        <div class="col-12 lg:col-6 xl:col-3">
-            <div class="card mb-0">
-                <div class="flex justify-content-between mb-3">
-                    <div>
-                        <span class="block text-500 font-medium mb-3">Orders</span>
-                        <div class="text-900 font-medium text-xl">152</div>
-                    </div>
-                    <div class="flex align-items-center justify-content-center bg-blue-100 border-round" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-shopping-cart text-blue-500 text-xl"></i>
-                    </div>
-                </div>
-                <span class="text-green-500 font-medium">24 new </span>
-                <span class="text-500">since last visit</span>
-            </div>
-        </div>
-        <div class="col-12 lg:col-6 xl:col-3">
-            <div class="card mb-0">
-                <div class="flex justify-content-between mb-3">
-                    <div>
-                        <span class="block text-500 font-medium mb-3">Revenue</span>
-                        <div class="text-900 font-medium text-xl">$2.100</div>
-                    </div>
-                    <div class="flex align-items-center justify-content-center bg-orange-100 border-round" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-map-marker text-orange-500 text-xl"></i>
-                    </div>
-                </div>
-                <span class="text-green-500 font-medium">%52+ </span>
-                <span class="text-500">since last week</span>
-            </div>
-        </div>
-        <div class="col-12 lg:col-6 xl:col-3">
-            <div class="card mb-0">
-                <div class="flex justify-content-between mb-3">
-                    <div>
-                        <span class="block text-500 font-medium mb-3">Customers</span>
-                        <div class="text-900 font-medium text-xl">28441</div>
-                    </div>
-                    <div class="flex align-items-center justify-content-center bg-cyan-100 border-round" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-inbox text-cyan-500 text-xl"></i>
-                    </div>
-                </div>
-                <span class="text-green-500 font-medium">520 </span>
-                <span class="text-500">newly registered</span>
-            </div>
-        </div>
-        <div class="col-12 lg:col-6 xl:col-3">
-            <div class="card mb-0">
-                <div class="flex justify-content-between mb-3">
-                    <div>
-                        <span class="block text-500 font-medium mb-3">Comments</span>
-                        <div class="text-900 font-medium text-xl">152 Unread</div>
-                    </div>
-                    <div class="flex align-items-center justify-content-center bg-purple-100 border-round" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-comment text-purple-500 text-xl"></i>
-                    </div>
-                </div>
-                <span class="text-green-500 font-medium">85 </span>
-                <span class="text-500">responded</span>
-            </div>
-        </div>
 
-        <div class="col-12 xl:col-6">
+<template>
+    <div class="grid">
+        <div class="col-12">
             <div class="card">
-                <h5>Recent Sales</h5>
-                <DataTable :value="products" :rows="5" :paginator="true" responsiveLayout="scroll">
-                    <Column style="width: 15%">
-                        <template #header> Image </template>
+                <Toolbar class="mb-4">
+                    <template v-slot:start>
+                        <div class="my-2">
+                            <Button label="New" icon="pi pi-plus" class="mr-2" severity="success" @click="openNew" />
+                            <Button label="Delete" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected" :disabled="!selectedProducts || !selectedProducts.length" />
+                        </div>
+                    </template>
+
+                    <template v-slot:end>
+                        <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block" />
+                        <Button label="Export" icon="pi pi-upload" severity="help" @click="exportCSV($event)" />
+                    </template>
+                </Toolbar>
+
+                <DataTable
+                    ref="dt"
+                    :value="products"
+                    v-model:selection="selectedProducts"
+                    dataKey="id"
+                    :paginator="true"
+                    :rows="10"
+                    :filters="filters"
+                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                    :rowsPerPageOptions="[5, 10, 25]"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+                >
+                    <template #header>
+                        <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                            <h5 class="m-0">Manage Cargo</h5>
+                            <IconField iconPosition="left" class="block mt-2 md:mt-0">
+                                <InputIcon class="pi pi-search" />
+                                <InputText class="w-full sm:w-auto" v-model="filters['global'].value" placeholder="Search..." />
+                            </IconField>
+                        </div>
+                    </template>
+
+                    <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
+                    <Column field="code" header="Code" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                         <template #body="slotProps">
-                            <img :src="'demo/images/product/' + slotProps.data.image" :alt="slotProps.data.image" width="50" class="shadow-2" />
+                            <span class="p-column-title">Code</span>
+                            {{ slotProps.data.code }}
                         </template>
                     </Column>
-                    <Column field="name" header="Name" :sortable="true" style="width: 35%"></Column>
-                    <Column field="price" header="Price" :sortable="true" style="width: 35%">
+                    <Column field="name" header="Name" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                         <template #body="slotProps">
+                            <span class="p-column-title">Name</span>
+                            {{ slotProps.data.name }}
+                        </template>
+                    </Column>
+                    <Column header="Image" headerStyle="width:14%; min-width:10rem;">
+                        <template #body="slotProps">
+                            <span class="p-column-title">Image</span>
+                            <img :src="'/demo/images/product/' + slotProps.data.image" :alt="slotProps.data.image" class="shadow-2" width="100" />
+                        </template>
+                    </Column>
+                    <Column field="price" header="Price" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                        <template #body="slotProps">
+                            <span class="p-column-title">Price</span>
                             {{ formatCurrency(slotProps.data.price) }}
                         </template>
                     </Column>
-                    <Column style="width: 15%">
-                        <template #header> View </template>
-                        <template #body>
-                            <Button icon="pi pi-search" type="button" class="p-button-text"></Button>
+                    <Column field="category" header="Category" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                        <template #body="slotProps">
+                            <span class="p-column-title">Category</span>
+                            {{ slotProps.data.category }}
+                        </template>
+                    </Column>
+                    <Column field="rating" header="Reviews" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                        <template #body="slotProps">
+                            <span class="p-column-title">Rating</span>
+                            <Rating :modelValue="slotProps.data.rating" :readonly="true" :cancel="false" />
+                        </template>
+                    </Column>
+                    <Column field="inventoryStatus" header="Status" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                        <template #body="slotProps">
+                            <span class="p-column-title">Status</span>
+                            <Tag :severity="getBadgeSeverity(slotProps.data.inventoryStatus)">{{ slotProps.data.inventoryStatus }}</Tag>
+                        </template>
+                    </Column>
+                    <Column headerStyle="min-width:10rem;">
+                        <template #body="slotProps">
+                            <Button icon="pi pi-pencil" class="mr-2" severity="success" rounded @click="editProduct(slotProps.data)" />
+                            <Button icon="pi pi-trash" class="mt-2" severity="warning" rounded @click="confirmDeleteProduct(slotProps.data)" />
                         </template>
                     </Column>
                 </DataTable>
-            </div>
-            <div class="card">
-                <div class="flex justify-content-between align-items-center mb-5">
-                    <h5>Best Selling Products</h5>
-                    <div>
-                        <Button icon="pi pi-ellipsis-v" class="p-button-text p-button-plain p-button-rounded" @click="$refs.menu2.toggle($event)"></Button>
-                        <Menu ref="menu2" :popup="true" :model="items"></Menu>
-                    </div>
-                </div>
-                <ul class="list-none p-0 m-0">
-                    <li class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
-                        <div>
-                            <span class="text-900 font-medium mr-2 mb-1 md:mb-0">Space T-Shirt</span>
-                            <div class="mt-1 text-600">Clothing</div>
-                        </div>
-                        <div class="mt-2 md:mt-0 flex align-items-center">
-                            <div class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" style="height: 8px">
-                                <div class="bg-orange-500 h-full" style="width: 50%"></div>
-                            </div>
-                            <span class="text-orange-500 ml-3 font-medium">%50</span>
-                        </div>
-                    </li>
-                    <li class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
-                        <div>
-                            <span class="text-900 font-medium mr-2 mb-1 md:mb-0">Portal Sticker</span>
-                            <div class="mt-1 text-600">Accessories</div>
-                        </div>
-                        <div class="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center">
-                            <div class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" style="height: 8px">
-                                <div class="bg-cyan-500 h-full" style="width: 16%"></div>
-                            </div>
-                            <span class="text-cyan-500 ml-3 font-medium">%16</span>
-                        </div>
-                    </li>
-                    <li class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
-                        <div>
-                            <span class="text-900 font-medium mr-2 mb-1 md:mb-0">Supernova Sticker</span>
-                            <div class="mt-1 text-600">Accessories</div>
-                        </div>
-                        <div class="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center">
-                            <div class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" style="height: 8px">
-                                <div class="bg-pink-500 h-full" style="width: 67%"></div>
-                            </div>
-                            <span class="text-pink-500 ml-3 font-medium">%67</span>
-                        </div>
-                    </li>
-                    <li class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
-                        <div>
-                            <span class="text-900 font-medium mr-2 mb-1 md:mb-0">Wonders Notebook</span>
-                            <div class="mt-1 text-600">Office</div>
-                        </div>
-                        <div class="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center">
-                            <div class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" style="height: 8px">
-                                <div class="bg-green-500 h-full" style="width: 35%"></div>
-                            </div>
-                            <span class="text-green-500 ml-3 font-medium">%35</span>
-                        </div>
-                    </li>
-                    <li class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
-                        <div>
-                            <span class="text-900 font-medium mr-2 mb-1 md:mb-0">Mat Black Case</span>
-                            <div class="mt-1 text-600">Accessories</div>
-                        </div>
-                        <div class="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center">
-                            <div class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" style="height: 8px">
-                                <div class="bg-purple-500 h-full" style="width: 75%"></div>
-                            </div>
-                            <span class="text-purple-500 ml-3 font-medium">%75</span>
-                        </div>
-                    </li>
-                    <li class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
-                        <div>
-                            <span class="text-900 font-medium mr-2 mb-1 md:mb-0">Robots T-Shirt</span>
-                            <div class="mt-1 text-600">Clothing</div>
-                        </div>
-                        <div class="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center">
-                            <div class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" style="height: 8px">
-                                <div class="bg-teal-500 h-full" style="width: 40%"></div>
-                            </div>
-                            <span class="text-teal-500 ml-3 font-medium">%40</span>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="col-12 xl:col-6">
-            <div class="card">
-                <h5>Sales Overview</h5>
-                <Chart type="line" :data="lineData" :options="lineOptions" />
-            </div>
-            <div class="card">
-                <div class="flex align-items-center justify-content-between mb-4">
-                    <h5>Notifications</h5>
-                    <div>
-                        <Button icon="pi pi-ellipsis-v" class="p-button-text p-button-plain p-button-rounded" @click="$refs.menu1.toggle($event)"></Button>
-                        <Menu ref="menu1" :popup="true" :model="items"></Menu>
-                    </div>
-                </div>
 
-                <span class="block text-600 font-medium mb-3">TODAY</span>
-                <ul class="p-0 mx-0 mt-0 mb-4 list-none">
-                    <li class="flex align-items-center py-2 border-bottom-1 surface-border">
-                        <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0">
-                            <i class="pi pi-dollar text-xl text-blue-500"></i>
-                        </div>
-                        <span class="text-900 line-height-3"
-                            >Richard Jones
-                            <span class="text-700">has purchased a blue t-shirt for <span class="text-blue-500">79$</span></span>
-                        </span>
-                    </li>
-                    <li class="flex align-items-center py-2">
-                        <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-orange-100 border-circle mr-3 flex-shrink-0">
-                            <i class="pi pi-download text-xl text-orange-500"></i>
-                        </div>
-                        <span class="text-700 line-height-3">Your request for withdrawal of <span class="text-blue-500 font-medium">2500$</span> has been initiated.</span>
-                    </li>
-                </ul>
+                <Dialog v-model:visible="productDialog" :style="{ width: '650px' }" header="Create Cargo" :modal="true" class="p-fluid">
+                    <form @submit.prevent="saveProduct()">
+                    <div class="field">
+                        <label for="name">Cargo Name {{ cargoname }}</label>
+                        <InputText id="name" v-model="cargoname" required="true" autofocus :invalid="submitted && !cargoname" placeholder="13Tons of Coal " />
+                        <small class="p-invalid" v-if="submitted && !cargoname">Cargo name is required.</small>
+                    </div>
+                    <div class="field">
+                        <label for="name">Cargo Weight in Tons</label>
+                        <InputNumber id="name" v-model="weight" required="true" autofocus :invalid="submitted && !weight" placeholder="13 " />
+                        <small class="p-invalid" v-if="submitted && !weight">Cargo weight is required.</small>
+                    </div>
 
-                <span class="block text-600 font-medium mb-3">YESTERDAY</span>
-                <ul class="p-0 m-0 list-none">
-                    <li class="flex align-items-center py-2 border-bottom-1 surface-border">
-                        <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-blue-100 border-circle mr-3 flex-shrink-0">
-                            <i class="pi pi-dollar text-xl text-blue-500"></i>
+                    <div class="field">
+                        <label for="name">Cargo Dimensions in Metres</label>
+                        <InputText id="name" v-model="dimensions" required="true" autofocus :invalid="submitted && !dimensions" placeholder="110x5x3 meters" />
+                        <small class="p-invalid" v-if="submitted && !dimensions">Name is required.</small>
+                    </div>
+
+                    <div class="field">
+                        <label for="inventoryStatus" class="mb-3">Cargo Type</label>
+                        <!-- <Dropdown id="inventoryStatus" v-model="selectedCargoType" :options="cargotype" optionLabel="label" placeholder="Select a Status">
+                            
+                        </Dropdown> -->
+                        {{ selectedCargoType}}
+                        <Dropdown v-model="selectedCargoType" :options="cargotype" filter optionLabel="name" 
+                            placeholder="Select Cargo Type">
+                            <template #value="slotProps">
+                                <div v-if="slotProps.name && slotProps.name.value">
+                                    <span :class="'product-badge status-' + slotProps.name.value">{{ slotProps.name.label }}</span>
+                                </div>
+                                <div v-else-if="slotProps.name && !slotProps.name.value">
+                                    <span :class="'product-badge status-' + slotProps.name.toLowerCase()">{{ slotProps.name }}</span>
+                                </div>
+                                <span v-else>
+                                    {{ slotProps.placeholder }}
+                                </span>
+                            </template>
+                        </Dropdown>
+                    </div>
+
+                    <div class="formgrid grid">
+                        <div class="field col">
+                        <label class="mb-3">Is the Cargo Fragile ?</label>
+                        <div class="formgrid grid">
+                            <div class="field-radiobutton col-6">
+                                <RadioButton id="category1" name="category" value="true" v-model="flagile" />
+                                <label for="category1">Yes</label>
+                            </div>
+                            <div class="field-radiobutton col-6">
+                                <RadioButton id="category2" name="category" value="false" v-model="flagile" />
+                                <label for="category2">No</label>
+                            </div>
                         </div>
-                        <span class="text-900 line-height-3"
-                            >Keyser Wick
-                            <span class="text-700">has purchased a black jacket for <span class="text-blue-500">59$</span></span>
-                        </span>
-                    </li>
-                    <li class="flex align-items-center py-2 border-bottom-1 surface-border">
-                        <div class="w-3rem h-3rem flex align-items-center justify-content-center bg-pink-100 border-circle mr-3 flex-shrink-0">
-                            <i class="pi pi-question text-xl text-pink-500"></i>
+                    </div>
+
+                    <div class="field col">
+                        <label class="mb-3">Is the Cargo Temperature Sensitve ?</label>
+                        <div class="formgrid grid">
+                            <div class="field-radiobutton col-6">
+                                <RadioButton id="category1" name="category" value="true" v-model="temperatureSensitive" />
+                                <label for="category1">Yes</label>
+                            </div>
+                            <div class="field-radiobutton col-6">
+                                <RadioButton id="category2" name="category" value="false" v-model="temperatureSensitive" />
+                                <label for="category2">No</label>
+                            </div>
                         </div>
-                        <span class="text-900 line-height-3"
-                            >Jane Davis
-                            <span class="text-700">has posted a new questions about your product.</span>
-                        </span>
-                    </li>
-                </ul>
-            </div>
-            <div
-                class="px-4 py-5 shadow-2 flex flex-column md:flex-row md:align-items-center justify-content-between mb-3"
-                style="border-radius: 1rem; background: linear-gradient(0deg, rgba(0, 123, 255, 0.5), rgba(0, 123, 255, 0.5)), linear-gradient(92.54deg, #1c80cf 47.88%, #ffffff 100.01%)"
-            >
-                <div>
-                    <div class="text-blue-100 font-medium text-xl mt-2 mb-3">TAKE THE NEXT STEP</div>
-                    <div class="text-white font-medium text-5xl">Try PrimeBlocks</div>
-                </div>
-                <div class="mt-4 mr-auto md:mt-0 md:mr-0">
-                    <a href="https://www.primefaces.org/primeblocks-vue" class="p-button font-bold px-5 py-3 p-button-warning p-button-rounded p-button-raised"> Get Started </a>
-                </div>
+                    </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="description">Special Handling Instruction</label>
+                        <Textarea id="description" v-model="handlingInstruction" required="true" rows="3" cols="20" />
+                    </div>
+
+                    <div class="formgrid grid">
+                        <div class="field col">
+                            <label for="pickup">Origin / Pickup Location</label>
+                            <InputText id="pickup" v-model="origin" :invalid="submitted && !origin" :required="true" />
+                            <small class="p-invalid" v-if="submitted && !origin">Pickup Location is required.</small>
+                        </div>
+                        <div class="field col">
+                            <label for="destination">Destination or Drop Point</label>
+                            <InputText id="destination" v-model="destination" integeronly :invalid="submitted && !destination"/>
+                            <small class="p-invalid" v-if="submitted && !destination">Destination Location is required.</small>
+
+                        </div>
+                    </div>
+
+                    
+                    <div class="formgrid grid">
+                        <div class="field col">
+                            <label for="receiver">Receiver's Name</label>
+                            <InputText id="receiver" v-model="receiverName" :invalid="submitted && !receiverName" :required="true" />
+                            <small class="p-invalid" v-if="submitted && !receiverName">Receiver is required.</small>
+                        </div>
+                        <div class="field col">
+                            <label for="quantity">Receiver's Contact Address</label>
+                            <InputText id="quantity" v-model="receiverContact" integeronly :invalid="submitted && !receiverContact" :required="true"/>
+                            <small class="p-invalid" v-if="submitted && !receiverContact">Receiver is required.</small>
+
+                        </div>
+                    </div>
+
+                    <div class="formgrid grid">
+                        <div class="field col">
+                            <label for="price">Document Name</label>
+                            <InputText id="price" v-model="cargoDocumentName" :invalid="submitted && !cargoDocumentName" :required="true" />
+                            <small class="p-invalid" v-if="submitted && !cargoDocumentName">Document name is required.</small>
+                        </div>
+                        <div class="field col">
+                            <label for="quantity">&nbsp;</label>
+                            <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none" aria-describedby="file_input_help" id="file_input" type="file"  ref="uploadInput" @change="handleFileUpload">
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">SVG, PNG, JPG or GIF (MAX. 800x400px).</p>
+                        </div>
+                        
+                    </div>
+                    <Button label="Cancel" icon="pi pi-times" text="" @click="hideDialog" />
+                    <Button label="Save" icon="pi pi-check" type="submit" />
+                </form>
+                   
+                </Dialog>
+
+                <Dialog v-model:visible="deleteProductDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+                    <div class="flex align-items-center justify-content-center">
+                        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+                        <span v-if="product"
+                            >Are you sure you want to delete <b>{{ product.name }}</b
+                            >?</span
+                        >
+                    </div>
+                    <template #footer>
+                        <Button label="No" icon="pi pi-times" text @click="deleteProductDialog = false" />
+                        <Button label="Yes" icon="pi pi-check" text @click="deleteProduct" />
+                    </template>
+                </Dialog>
+
+                <Dialog v-model:visible="deleteProductsDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+                    <div class="flex align-items-center justify-content-center">
+                        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+                        <span v-if="product">Are you sure you want to delete the selected products?</span>
+                    </div>
+                    <template #footer>
+                        <Button label="No" icon="pi pi-times" text @click="deleteProductsDialog = false" />
+                        <Button label="Yes" icon="pi pi-check" text @click="deleteSelectedProducts" />
+                    </template>
+                </Dialog>
             </div>
         </div>
     </div>
