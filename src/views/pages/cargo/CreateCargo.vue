@@ -1,7 +1,6 @@
 <script setup>
 import { FilterMatchMode } from 'primevue/api';
 import { ref, onMounted, onBeforeMount } from 'vue';
-import { ProductService } from '@/services/ProductService';
 import { useToast } from 'primevue/usetoast';
 import { useAuthStore } from '@/store/authStore'; // Import your auth store
 import apiService from '@/services/apiService'; // Import your API service
@@ -16,7 +15,10 @@ const selectedProducts = ref(null);
 const dt = ref(null);
 const filters = ref({});
 const submitted = ref(false);
+const fomu = ref(null)
+
 const cargotype = ref({})
+const companyCargo = ref({})
 
 // form fields
 // Define ref variables for form fields
@@ -35,123 +37,68 @@ const cargoDocumentName = ref('');
 const cargoDocument = ref(null);
 
 
-const handleFileUpload = (event) => {
-      cargoDocument.value = event.target.files[0];
-    };
+async function saveCargo() {
+  submitted.value = true;
 
-const saveProduct = () => {
-    submitted.value = true;
-
-      // Check if required fields are filled not working function
-      
-  if (!cargoname.value || !weight.value || !dimensions.value || !selectedCargoType.value || !flagile.value || !temperatureSensitive.value || !handlingInstruction.value || !origin.value || !destination.value || !receiverName.value || !receiverContact.value || !cargoDocumentName.value || !cargoDocument.value) {
-    console.error('All fields are required.');
+  // Validate the form
+  if (!cargoname.value || !weight.value || !dimensions.value || !selectedCargoType.value || !origin.value || !destination.value || !receiverName.value || !receiverContact.value || !cargoDocumentName.value) {
     return;
   }
-  const cargoData = {
-    cargo_type: { name: cargotype.value.id },
-    weight: Number(weight.value),
-    dimensions: dimensions.value,
-    cargo: cargotype.value,
-    fragile: flagile.value,
-    temperature_sensitive: temperatureSensitive.value,
-    special_handling_instructions: handlingInstruction.value,
-    origin: origin.value,
-    destination: destination.value,
-    receiver_name: receiverName.value,
-    receiver_contact: receiverContact.value,
-    cargo_document: {
-      documentName: cargoDocumentName.value,
-      documentFile: cargoDocument.value
-    }
-    
-  }
-  console.log(cargoData);
-      apiService.post('cargo/', cargoData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    })
 
-    .then(response => {
-        console.log('Cargo data posted successfully:', response.data);
-        toast.add({ severity: 'success', summary: 'Successful', detail: 'Cargo data posted successfully', life: 3000 });
-        // Reset form fields after successful submission
-        cargoname.value = '';
-        weight.value = '';
-        dimensions.value = '';
-        flagile.value = false;
-        tempsensitive.value = false;
-        handlingInstruction.value = '';
-        origin.value = '';
-        destination.value = '';
-        receiverName.value = '';
-        receiverContact.value = '';
-        cargoDocumentName.value = '';
-        cargoDocument.value = '';
-        pickupdate.value = '';
-        deliveryDate.value = '';
-        selectedCargoType.value = null;
-    })
-    .catch(error => {
-        console.error('Error posting cargo data:', error);
-        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to post cargo data', life: 3000 });
+  try {
+    const formData = new FormData(fomu.value);
+    // formData.append('cargoname', cargoname.value);
+    // formData.append('weight', weight.value);
+    // formData.append('dimensions', dimensions.value);
+    // formData.append('cargo_type', selectedCargoType.value.id);
+    // formData.append('fragile', flagile.value);
+    // formData.append('temperatureSensitive', temperatureSensitive.value);
+    // formData.append('handlingInstruction', handlingInstruction.value);
+    // formData.append('origin', origin.value);
+    // formData.append('destination', destination.value);
+    // formData.append('receiver_name', receiverName.value);
+    // formData.append('receiver_contact', receiverContact.value);
+    // formData.append('cargoDocumentName', cargoDocumentName.value);
+    // formData.append('cargo_document', cargoDocument.value);
+
+    console.log(formData);
+    const response = await apiService.post('cargo/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
     });
 
-    // const payload = {
-    //     cargo_type: {
-    //         name: selectedCargoType.value.slug
-    //     },
-    //     cargo_document: {
-    //         documentName: cargoDocumentName.value,
-    //         documentFile: cargoDocument.value,
-    //     },
-    //     weight: weight.value,
-    //     dimensions: dimensions.value,
-    //     cargo: cargoname.value,
-    //     fragile: flagile.value,
-    //     temperature_sensitive: tempsensitive.value,
-    //     special_handling_instructions: handlingInstruction.value,
-    //     origin: origin.value,
-    //     destination: destination.value,
-    //     receiver_name: receiverName.value,
-    //     receiver_contact: receiverContact.value,
-    //     pickupdate: pickupdate.value,
-    //     delivery_date: deliveryDate.value
-    // };
 
-    // console.log(payload);
+    if (response.status === 200) {
+      // Reset form fields
+      cargoname.value = '';
+      weight.value = '';
+      dimensions.value = '';
+      selectedCargoType.value = null;
+      flagile.value = false;
+      temperatureSensitive.value = false;
+      handlingInstruction.value = '';
+      origin.value = '';
+      destination.value = '';
+      receiverName.value = '';
+      receiverContact.value = '';
+      cargoDocumentName.value = '';
+      submitted.value = false;
 
-    // apiService.post('cargo/', payload, {
-    //     headers: {
-    //         'Content-Type': 'multipart/form-data'
-    //     }
-    // })
-    // .then(response => {
-    //     console.log('Cargo data posted successfully:', response.data);
-    //     toast.add({ severity: 'success', summary: 'Successful', detail: 'Cargo data posted successfully', life: 3000 });
-    //     // Reset form fields after successful submission
-    //     cargoname.value = '';
-    //     weight.value = '';
-    //     dimensions.value = '';
-    //     flagile.value = false;
-    //     tempsensitive.value = false;
-    //     handlingInstruction.value = '';
-    //     origin.value = '';
-    //     destination.value = '';
-    //     receiverName.value = '';
-    //     receiverContact.value = '';
-    //     cargoDocumentName.value = '';
-    //     cargoDocument.value = '';
-    //     pickupdate.value = '';
-    //     deliveryDate.value = '';
-    //     selectedCargoType.value = null;
-    // })
-    // .catch(error => {
-    //     console.error('Error posting cargo data:', error);
-    //     toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to post cargo data', life: 3000 });
-    // });
-};
+      // Redirect or show success message
+      // this.$router.push('/');
+    } else {
+      // Handle error
+      console.error('Failed to add cargo');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+function handleFileUpload(event) {
+  cargoDocument.value = event.target.files[0];
+}
 
 
 // method to get all categories
@@ -166,35 +113,30 @@ const getCategories = function () {
 		});
 };
 
-const statuses = ref([
-    { label: 'INSTOCK', value: 'instock' },
-    { label: 'LOWSTOCK', value: 'lowstock' },
-    { label: 'OUTOFSTOCK', value: 'outofstock' }
-]);
-
-const productService = new ProductService();
-
-const getBadgeSeverity = (inventoryStatus) => {
-    switch (inventoryStatus.toLowerCase()) {
-        case 'instock':
-            return 'success';
-        case 'lowstock':
-            return 'warning';
-        case 'outofstock':
-            return 'danger';
-        default:
-            return 'info';
-    }
+const getCompanyCargo = function () {
+	apiService.get('cargo/')
+		.then(async (response) => {
+			console.log(response.data);
+			companyCargo.value = await response.data;
+		})
+		.catch(error => {
+			console.log(error);
+		});
 };
+
+
 
 onBeforeMount(() => {
     initFilters();
     getCategories();
+    getCompanyCargo();
     
 });
-onMounted(() => {
-    productService.getProducts().then((data) => (products.value = data));
-});
+
+// onMounted(() => {
+//     productService.getProducts().then((data) => (products.value = data));
+// });
+
 const formatCurrency = (value) => {
     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 };
@@ -289,80 +231,43 @@ const initFilters = () => {
                 </Toolbar>
 
                 <DataTable
-                    ref="dt"
-                    :value="products"
-                    v-model:selection="selectedProducts"
-                    dataKey="id"
-                    :paginator="true"
-                    :rows="10"
-                    :filters="filters"
-                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                    :rowsPerPageOptions="[5, 10, 25]"
-                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-                >
-                    <template #header>
-                        <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                            <h5 class="m-0">Manage Cargo</h5>
-                            <IconField iconPosition="left" class="block mt-2 md:mt-0">
-                                <InputIcon class="pi pi-search" />
-                                <InputText class="w-full sm:w-auto" v-model="filters['global'].value" placeholder="Search..." />
-                            </IconField>
-                        </div>
-                    </template>
+                ref="dt"
+                :value="companyCargo"
+                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                :rowsPerPageOptions="[5, 10, 25]"
+                
+>
 
-                    <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-                    <Column field="code" header="Code" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-                        <template #body="slotProps">
-                            <span class="p-column-title">Code</span>
-                            {{ slotProps.data.code }}
-                        </template>
-                    </Column>
-                    <Column field="name" header="Name" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-                        <template #body="slotProps">
-                            <span class="p-column-title">Name</span>
-                            {{ slotProps.data.name }}
-                        </template>
-                    </Column>
-                    <Column header="Image" headerStyle="width:14%; min-width:10rem;">
-                        <template #body="slotProps">
-                            <span class="p-column-title">Image</span>
-                            <img :src="'/demo/images/product/' + slotProps.data.image" :alt="slotProps.data.image" class="shadow-2" width="100" />
-                        </template>
-                    </Column>
-                    <Column field="price" header="Price" :sortable="true" headerStyle="width:14%; min-width:8rem;">
-                        <template #body="slotProps">
-                            <span class="p-column-title">Price</span>
-                            {{ formatCurrency(slotProps.data.price) }}
-                        </template>
-                    </Column>
-                    <Column field="category" header="Category" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-                        <template #body="slotProps">
-                            <span class="p-column-title">Category</span>
-                            {{ slotProps.data.category }}
-                        </template>
-                    </Column>
-                    <Column field="rating" header="Reviews" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-                        <template #body="slotProps">
-                            <span class="p-column-title">Rating</span>
-                            <Rating :modelValue="slotProps.data.rating" :readonly="true" :cancel="false" />
-                        </template>
-                    </Column>
-                    <Column field="inventoryStatus" header="Status" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-                        <template #body="slotProps">
-                            <span class="p-column-title">Status</span>
-                            <Tag :severity="getBadgeSeverity(slotProps.data.inventoryStatus)">{{ slotProps.data.inventoryStatus }}</Tag>
-                        </template>
-                    </Column>
-                    <Column headerStyle="min-width:10rem;">
-                        <template #body="slotProps">
-                            <Button icon="pi pi-pencil" class="mr-2" severity="success" rounded @click="editProduct(slotProps.data)" />
-                            <Button icon="pi pi-trash" class="mt-2" severity="warning" rounded @click="confirmDeleteProduct(slotProps.data)" />
-                        </template>
-                    </Column>
-                </DataTable>
+    <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
+    <Column field="cargo" header="Code" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+    <Column field="dimensions" header="Dimensions (m)" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+    <Column field="fragile" header="Flagile" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+        <template #body="slotProps">
+            <span class="p-column-title">Status</span>
+            <Tag :severity="slotProps.fragile">{{ slotProps.fragile ? 'Yes' : 'False' }}</Tag>
+        </template>
+    </Column>
+    <Column field="temperature_sensitive" header="Sensintive" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+        <template #body="slotProps">
+            <span class="p-column-title">Status</span>
+            <Tag :severity="slotProps.temperature_sensitive">{{ slotProps.temperature_sensitive ? 'Yes' : 'False' }}</Tag>
+        </template>
+    </Column>
+
+    <Column field="cargo_type.name" header="Cargo Type" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+    <Column field="origin" header="From" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+    <Column field="destination" header="Destination" :sortable="true" headerStyle="width:14%; min-width:10rem;"></Column>
+    <Column headerStyle="min-width:10rem;">
+        <template #body="slotProps">
+            <Button icon="pi pi-pencil" class="mr-2" severity="success" rounded @click="editProduct(slotProps.data)" />
+            <Button icon="pi pi-trash" class="mt-2" severity="warning" rounded @click="confirmDeleteProduct(slotProps.data)" />
+        </template>
+    </Column>
+</DataTable>
+
 
                 <Dialog v-model:visible="productDialog" :style="{ width: '650px' }" header="Create Cargo" :modal="true" class="p-fluid">
-                    <form @submit.prevent="saveProduct()">
+                    <form @submit.prevent="saveCargo" ref="fomu">
                     <div class="field">
                         <label for="name">Cargo Name {{ cargoname }}</label>
                         <InputText id="name" v-model="cargoname" required="true" autofocus :invalid="submitted && !cargoname" placeholder="13Tons of Coal " />
