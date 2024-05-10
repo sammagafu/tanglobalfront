@@ -270,18 +270,18 @@ const initFilters = () => {
                     <form @submit.prevent="saveCargo" ref="fomu">
                     <div class="field">
                         <label for="name">Cargo Name {{ cargoname }}</label>
-                        <InputText id="name" v-model="cargoname" required="true" autofocus :invalid="submitted && !cargoname" placeholder="13Tons of Coal " />
+                        <InputText id="name" name="cargoname" v-model="cargoname" required="true" autofocus :invalid="submitted && !cargoname" placeholder="13Tons of Coal " />
                         <small class="p-invalid" v-if="submitted && !cargoname">Cargo name is required.</small>
                     </div>
                     <div class="field">
                         <label for="name">Cargo Weight in Tons</label>
-                        <InputNumber id="name" v-model="weight" required="true" autofocus :invalid="submitted && !weight" placeholder="13 " />
+                        <InputText id="name" name="weight" v-model="weight" required="true" autofocus :invalid="submitted && !weight" placeholder="13 " />
                         <small class="p-invalid" v-if="submitted && !weight">Cargo weight is required.</small>
                     </div>
 
                     <div class="field">
                         <label for="name">Cargo Dimensions in Metres</label>
-                        <InputText id="name" v-model="dimensions" required="true" autofocus :invalid="submitted && !dimensions" placeholder="110x5x3 meters" />
+                        <InputText id="name" name="dimensions" v-model="dimensions" required="true" autofocus :invalid="submitted && !dimensions" placeholder="110x5x3 meters" />
                         <small class="p-invalid" v-if="submitted && !dimensions">Name is required.</small>
                     </div>
 
@@ -291,7 +291,7 @@ const initFilters = () => {
                             
                         </Dropdown> -->
                         {{ selectedCargoType}}
-                        <Dropdown v-model="selectedCargoType" :options="cargotype" filter optionLabel="name" 
+                        <Dropdown v-model="selectedCargoType" :options="cargotype" name="selectedCargoType" filter optionLabel="name" 
                             placeholder="Select Cargo Type">
                             <template #value="slotProps">
                                 <div v-if="slotProps.name && slotProps.name.value">
@@ -312,11 +312,11 @@ const initFilters = () => {
                         <label class="mb-3">Is the Cargo Fragile ?</label>
                         <div class="formgrid grid">
                             <div class="field-radiobutton col-6">
-                                <RadioButton id="category1" name="category" value="true" v-model="flagile" />
+                                <RadioButton id="category1" name="flagile" value="true" v-model="flagile" />
                                 <label for="category1">Yes</label>
                             </div>
                             <div class="field-radiobutton col-6">
-                                <RadioButton id="category2" name="category" value="false" v-model="flagile" />
+                                <RadioButton id="category2" name="flagile" value="false" v-model="flagile" />
                                 <label for="category2">No</label>
                             </div>
                         </div>
@@ -326,11 +326,11 @@ const initFilters = () => {
                         <label class="mb-3">Is the Cargo Temperature Sensitve ?</label>
                         <div class="formgrid grid">
                             <div class="field-radiobutton col-6">
-                                <RadioButton id="category1" name="category" value="true" v-model="temperatureSensitive" />
+                                <RadioButton id="category1" name="temperatureSensitive" value="true" v-model="temperatureSensitive" />
                                 <label for="category1">Yes</label>
                             </div>
                             <div class="field-radiobutton col-6">
-                                <RadioButton id="category2" name="category" value="false" v-model="temperatureSensitive" />
+                                <RadioButton id="category2" name="temperatureSensitive" value="false" v-model="temperatureSensitive" />
                                 <label for="category2">No</label>
                             </div>
                         </div>
@@ -339,18 +339,18 @@ const initFilters = () => {
 
                     <div class="field">
                         <label for="description">Special Handling Instruction</label>
-                        <Textarea id="description" v-model="handlingInstruction" required="true" rows="3" cols="20" />
+                        <Textarea id="description" v-model="handlingInstruction" name="handlingInstruction" required="true" rows="3" cols="20" />
                     </div>
 
                     <div class="formgrid grid">
                         <div class="field col">
                             <label for="pickup">Origin / Pickup Location</label>
-                            <InputText id="pickup" v-model="origin" :invalid="submitted && !origin" :required="true" />
+                            <InputText id="pickup" name="origin" v-model="origin" :invalid="submitted && !origin" :required="true" />
                             <small class="p-invalid" v-if="submitted && !origin">Pickup Location is required.</small>
                         </div>
                         <div class="field col">
                             <label for="destination">Destination or Drop Point</label>
-                            <InputText id="destination" v-model="destination" integeronly :invalid="submitted && !destination"/>
+                            <InputText id="destination" name="destination" v-model="destination" integeronly :invalid="submitted && !destination"/>
                             <small class="p-invalid" v-if="submitted && !destination">Destination Location is required.</small>
 
                         </div>
@@ -360,12 +360,12 @@ const initFilters = () => {
                     <div class="formgrid grid">
                         <div class="field col">
                             <label for="receiver">Receiver's Name</label>
-                            <InputText id="receiver" v-model="receiverName" :invalid="submitted && !receiverName" :required="true" />
+                            <InputText id="receiver" v-model="receiverName" name="receiver_name" :invalid="submitted && !receiverName" :required="true" />
                             <small class="p-invalid" v-if="submitted && !receiverName">Receiver is required.</small>
                         </div>
                         <div class="field col">
                             <label for="quantity">Receiver's Contact Address</label>
-                            <InputText id="quantity" v-model="receiverContact" integeronly :invalid="submitted && !receiverContact" :required="true"/>
+                            <InputText id="quantity" v-model="receiverContact" name="receiver_contact" integeronly :invalid="submitted && !receiverContact" :required="true"/>
                             <small class="p-invalid" v-if="submitted && !receiverContact">Receiver is required.</small>
 
                         </div>
@@ -374,12 +374,12 @@ const initFilters = () => {
                     <div class="formgrid grid">
                         <div class="field col">
                             <label for="price">Document Name</label>
-                            <InputText id="price" v-model="cargoDocumentName" :invalid="submitted && !cargoDocumentName" :required="true" />
+                            <InputText id="price" name="cargoDocumentName" v-model="cargoDocumentName" :invalid="submitted && !cargoDocumentName" :required="true" />
                             <small class="p-invalid" v-if="submitted && !cargoDocumentName">Document name is required.</small>
                         </div>
                         <div class="field col">
                             <label for="quantity">&nbsp;</label>
-                            <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none" aria-describedby="file_input_help" id="file_input" type="file"  ref="uploadInput" @change="handleFileUpload">
+                            <input class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none" aria-describedby="file_input_help" id="file_input" type="file" name="documents"  ref="uploadInput" @change="handleFileUpload">
                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">SVG, PNG, JPG or GIF (MAX. 800x400px).</p>
                         </div>
                         
