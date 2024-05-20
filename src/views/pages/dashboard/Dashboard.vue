@@ -2,11 +2,14 @@
 import { onMounted, reactive, ref, watch } from 'vue';
 import { ProductService } from '@/services/ProductService';
 import { useLayout } from '@/layout/composables/layout';
+import Dialog from 'primevue/dialog';
 import { useAuthStore } from '@/store/authStore'; // Import your auth store
-
 const { isDarkTheme } = useLayout();
 const authStore = useAuthStore();
 const products = ref(null);
+const userData = ref(null);
+const isvisiblePayment = ref(false);
+
 const lineData = reactive({
     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
     datasets: [
@@ -36,7 +39,14 @@ const lineOptions = ref(null);
 const productService = new ProductService();
 
 onMounted(() => {
+    // Fetch products when the component mounts
     productService.getProductsSmall().then((data) => (products.value = data));
+    if(userData.isvisiblePayment === null && userData.is_company === true){
+        isvisiblePayment.value = true
+    }
+    // userData.value = authStore.user;
+    // v-if="userData.company_details === null"
+    // if(){}
 });
 
 const formatCurrency = (value) => {
@@ -116,8 +126,24 @@ watch(
 </script>
 
 <template>
-    <div class="py-4 text-xl font-bold">
-        Welcome {{ authStore.user.full_name }}
+    <Dialog v-model:visible="visible" modal header="Please Update Your Company Information" :style="{ width: '30rem' }" class="text-center">
+    <div class="flex align-items-center gap-3 mb-3">
+        <label for="username" class="font-semibold w-6rem">Username</label>
+        <InputText id="username" class="flex-auto" autocomplete="off" />
+    </div>
+    <div class="flex align-items-center gap-3 mb-5">
+        <label for="email" class="font-semibold w-6rem">Email</label>
+        <InputText id="email" class="flex-auto" autocomplete="off" />
+    </div>
+    <div class="flex justify-content-end gap-2">
+        <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
+        <Button type="button" label="Save" @click="visible = false"></Button>
+    </div>
+</Dialog>
+
+
+    <div class="py-4 text-xl font-bold" v-if="userData">
+        Welcome {{userData.full_name}}
     </div>
     <div class="grid">
         <div class="col-12 lg:col-6 xl:col-3">
@@ -343,18 +369,6 @@ watch(
                         </span>
                     </li>
                 </ul>
-            </div>
-            <div
-                class="px-4 py-5 shadow-2 flex flex-column md:flex-row md:align-items-center justify-content-between mb-3"
-                style="border-radius: 1rem; background: linear-gradient(0deg, rgba(0, 123, 255, 0.5), rgba(0, 123, 255, 0.5)), linear-gradient(92.54deg, #1c80cf 47.88%, #ffffff 100.01%)"
-            >
-                <div>
-                    <div class="text-blue-100 font-medium text-xl mt-2 mb-3">TAKE THE NEXT STEP</div>
-                    <div class="text-white font-medium text-5xl">Try PrimeBlocks</div>
-                </div>
-                <div class="mt-4 mr-auto md:mt-0 md:mr-0">
-                    <a href="https://www.primefaces.org/primeblocks-vue" class="p-button font-bold px-5 py-3 p-button-warning p-button-rounded p-button-raised"> Get Started </a>
-                </div>
             </div>
         </div>
     </div>

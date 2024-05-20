@@ -1,85 +1,121 @@
 <script setup>
 import { FilterMatchMode } from 'primevue/api';
 import { ref, onMounted, onBeforeMount } from 'vue';
-import { ProductService } from '@/services/ProductService';
 import { useToast } from 'primevue/usetoast';
 import { useAuthStore } from '@/store/authStore'; // Import your auth store
 import apiService from '@/services/apiService'; // Import your API service
+
 const toast = useToast();
 
-const products = ref(null);
+const fleet = ref([]);
 const productDialog = ref(false);
 const deleteProductDialog = ref(false);
 const deleteProductsDialog = ref(false);
 const product = ref({});
-const selectedProducts = ref(null);
+const selectedProducts = ref([]);
 const dt = ref(null);
 const filters = ref({});
-const submitted = ref(false);
-const cargotype = ref({})
-const selectedCargoType = ref()
+
+const fleetype = ref([]);
 
 // form fields
-const cargoname = ref()
-const weight = ref()
-const dimensions = ref()
-const flagile = ref(false)
-const tempsensitive = ref(false)
-const handlingInstruction = ref()
-const origin = ref()
-const destination = ref()
-const receiverName = ref()
-const receiverContact = ref()
-const cargoDocumentName = ref()
-const cargoDocument = ref()
-const pickupdate = ref()
-const deliveryDate = ref()
-
+const fomu = ref(null)
+const platenumber = ref('');
+const weight = ref(null);
+const selectedFleetType = ref(null);
+const isInsured = ref(null);
+const submitted = ref(false);
+const files = ref(null);
 
 // method to get all categories
-const getCategories = function () {
-	apiService.get('cargo/type')
-		.then(async (response) => {
-			console.log(response.data);
-			cargotype.value = await response.data;
-		})
-		.catch(error => {
-			console.log(error);
-		});
+const getCategories = () => {
+    apiService.get('fleet/type')
+        .then(response => {
+            fleetype.value = response.data;
+        })
+        .catch(error => {
+            console.log(error);
+        });
 };
 
-const statuses = ref([
-    { label: 'INSTOCK', value: 'instock' },
-    { label: 'LOWSTOCK', value: 'lowstock' },
-    { label: 'OUTOFSTOCK', value: 'outofstock' }
-]);
+const getFleet = () => {
+    apiService.get('fleet/')
+        .then(response => {
+            fleet.value = response.data;
+            console.log(fleet.value);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+};
 
-const productService = new ProductService();
-
-const getBadgeSeverity = (inventoryStatus) => {
-    switch (inventoryStatus.toLowerCase()) {
-        case 'instock':
-            return 'success';
-        case 'lowstock':
-            return 'warning';
-        case 'outofstock':
-            return 'danger';
-        default:
-            return 'info';
+const saveFleet = () => {
+    submitted.value = true;
+    if (!platenumber.value || !weight.value || !selectedFleetType.value) {
+        return;
     }
+
+    const formData = new FormData(fomu.value);
+    formData.append('platenumber', platenumber.value);
+    formData.append('capacity', weight.value);
+    formData.append('vehicleTypes', selectedFleetType.value);
+    formData.append('isInsured', isInsured.value);
+
+    for (let i = 0; i < files.value.files.length; i++) {
+        formData.append('images', files.value.files[i]);
+    }
+
+    console.log('Form submitted', {
+        platenumber: platenumber.value,
+        weight: weight.value,
+        selectedFleetType: selectedFleetType.value,
+        isInsured: isInsured.value,
+        files: files.value.files
+    });
+
+
+    apiService.post('fleet/', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+        .then(response => {
+            toast.add({ severity: 'success', summary: 'Successful', detail: 'Fleet saved successfully', life: 3000 });
+            getFleet();
+            productDialog.value = false;
+            resetForm();
+        })
+        .catch(error => {
+            console.error('Error saving fleet:', error);
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Error saving fleet', life: 3000 });
+        });
+};
+
+const onUpload = (event) => {
+    console.log('Files selected:', event.target.files);
+    files.value = event.target;
+};
+
+const resetForm = () => {
+    platenumber.value = '';
+    weight.value = null;
+    selectedFleetType.value = null;
+    isInsured.value = null;
+    if (files.value) {
+        files.value.value = ''; // Clear file input
+    }
+    submitted.value = false;
 };
 
 onBeforeMount(() => {
     initFilters();
     getCategories();
-    
+    getFleet();
 });
-onMounted(() => {
-    productService.getProducts().then((data) => (products.value = data));
-});
-const formatCurrency = (value) => {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-};
+
+// const formatCurrency = (value) => {
+//     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+// };
 
 const openNew = () => {
     product.value = {};
@@ -90,122 +126,30 @@ const openNew = () => {
 const hideDialog = () => {
     productDialog.value = false;
     submitted.value = false;
+    resetForm();
 };
-
-const saveProduct = () => {
-    if (cargoname.value && cargoname.value.trim() && weight.value && cargoDocument.value) {
-        const formData = new FormData();
-        formData.append('name', cargoname.value);
-        formData.append('weight', weight.value);
-        formData.append('dimensions', dimensions.value);
-        formData.append('flagile', flagile.value);
-        formData.append('tempsensitive', tempsensitive.value);
-        formData.append('handlingInstruction', handlingInstruction.value);
-        formData.append('origin', origin.value);
-        formData.append('destination', destination.value);
-        formData.append('receiverName', receiverName.value);
-        formData.append('receiverContact', receiverContact.value);
-        // formData.append('cargoDocumentName', cargoDocumentName.value);
-        // formData.append('cargoDocument', cargoDocument.value);
-        formData.append('pickupdate', pickupdate.value);
-        formData.append('deliveryDate', deliveryDate.value);
-        formData.append('cargoType', selectedCargoType.value);
-
-    //     if (cargoDocument.value) {
-    //     formData.append('file', cargoDocument.value);
-    //   }
-
-        // Log formData to ensure all data is included
-        // console.log("Form Data:", formData);
-
-        // axios.post('http://localhost:8000/api/v1/cargo/', formData, {
-        //     headers: {
-        //         'Content-Type': 'multipart/form-data'
-        //     }
-        // })
-        // .then(response => {
-        //     console.log('Cargo data posted successfully:', response.data);
-        //     toast.add({ severity: 'success', summary: 'Successful', detail: 'Cargo data posted successfully', life: 3000 });
-        // })
-        // .catch(error => {
-        //     console.error('Error posting cargo data:', error);
-        //     toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to post cargo data', life: 3000 });
-        // });
-        // Optionally, you can reset form fields or close dialog after posting data
-
-
-        apiService.post('cargo/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-      .then(response => {
-        toast.add({ severity: 'success', summary: 'Success', detail: 'Form submitted successfully' });
-        // Reset form fields after successful submission if needed
-        name.value = '';
-        weight.value = 0;
-        file.value = null;
-      })
-      .catch(error => {
-        console.error('Error submitting form:', error);
-        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to submit form' });
-      });
-
-
-        productDialog.value = false;
-        cargoname.value = '';
-        weight.value = '';
-        dimensions.value = '';
-        flagile.value = false;
-        tempsensitive.value = false;
-        handlingInstruction.value = '';
-        origin.value = '';
-        destination.value = '';
-        receiverName.value = '';
-        receiverContact.value = '';
-        cargoDocumentName.value = '';
-        cargoDocument.value = '';
-        pickupdate.value = '';
-        deliveryDate.value = '';
-        selectedCargoType.value = null;
-    } else {
-        toast.add({ severity: 'error', summary: 'Error', detail: 'Please fill in all required fields and upload cargo document', life: 3000 });
-    }
-};
-
-
-
-const onUpload = (event) => {
-    cargoDocument.value = event.target.files[0]; 
-};
-
 
 const editProduct = (editProduct) => {
     product.value = { ...editProduct };
     productDialog.value = true;
 };
 
-const confirmDeleteProduct = (editProduct) => {
-    product.value = editProduct;
+const confirmDeleteProduct = (productToDelete) => {
+    product.value = productToDelete;
     deleteProductDialog.value = true;
 };
 
 const deleteProduct = () => {
-    products.value = products.value.filter((val) => val.id !== product.value.id);
-    deleteProductDialog.value = false;
-    product.value = {};
-    toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
-};
-
-const findIndexById = (id) => {
-    let index = -1;
-    for (let i = 0; i < products.value.length; i++) {
-        if (products.value[i].id === id) {
-            index = i;
-            break;
-        }
-    }
-    return index;
+    apiService.delete(`fleet/${product.value.id}`)
+        .then(response => {
+            toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
+            getFleet();
+            deleteProductDialog.value = false;
+        })
+        .catch(error => {
+            console.error('Error deleting product:', error);
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Error deleting product', life: 3000 });
+        });
 };
 
 const createId = () => {
@@ -224,11 +168,19 @@ const exportCSV = () => {
 const confirmDeleteSelected = () => {
     deleteProductsDialog.value = true;
 };
+
 const deleteSelectedProducts = () => {
-    products.value = products.value.filter((val) => !selectedProducts.value.includes(val));
-    deleteProductsDialog.value = false;
-    selectedProducts.value = null;
+    selectedProducts.value.forEach(product => {
+        apiService.delete(`fleet/${product.id}`)
+            .catch(error => {
+                console.error('Error deleting product:', error);
+            });
+    });
+
     toast.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
+    getFleet();
+    deleteProductsDialog.value = false;
+    selectedProducts.value = [];
 };
 
 const initFilters = () => {
@@ -238,6 +190,7 @@ const initFilters = () => {
 };
 </script>
 
+
 <template>
     <div class="grid">
         <div class="col-12">
@@ -246,218 +199,167 @@ const initFilters = () => {
                     <template v-slot:start>
                         <div class="my-2">
                             <Button label="New" icon="pi pi-plus" class="mr-2" severity="success" @click="openNew" />
-                            <Button label="Delete" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected" :disabled="!selectedProducts || !selectedProducts.length" />
+                            <Button label="Delete" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected"
+                                :disabled="!selectedProducts.length" />
                         </div>
                     </template>
 
                     <template v-slot:end>
-                        <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block" />
-                        <Button label="Export" icon="pi pi-upload" severity="help" @click="exportCSV($event)" />
+                        <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import"
+                            chooseLabel="Import" class="mr-2 inline-block" />
+                        <Button label="Export" icon="pi pi-upload" severity="help" @click="exportCSV" />
                     </template>
                 </Toolbar>
 
-                <DataTable
-                    ref="dt"
-                    :value="products"
-                    v-model:selection="selectedProducts"
-                    dataKey="id"
-                    :paginator="true"
-                    :rows="10"
-                    :filters="filters"
+                <DataTable ref="dt" :value="fleet" v-model:selection="selectedProducts" dataKey="id" :paginator="true"
+                    :rows="10" :filters="filters"
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     :rowsPerPageOptions="[5, 10, 25]"
-                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-                >
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products">
                     <template #header>
                         <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                             <h5 class="m-0">Manage Fleet</h5>
                             <IconField iconPosition="left" class="block mt-2 md:mt-0">
                                 <InputIcon class="pi pi-search" />
-                                <InputText class="w-full sm:w-auto" v-model="filters['global'].value" placeholder="Search..." />
+                                <InputText class="w-full sm:w-auto" v-model="filters['global'].value"
+                                    placeholder="Search..." />
                             </IconField>
                         </div>
                     </template>
 
                     <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-                    <Column field="code" header="Code" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                    <Column field="platenumber" header="Plate Number" :sortable="true"
+                        headerStyle="width:14%; min-width:10rem;">
                         <template #body="slotProps">
-                            <span class="p-column-title">Code</span>
-                            {{ slotProps.data.code }}
+                            <span class="p-column-title">Plate Number</span>
+                            {{ slotProps.data.platenumber }}
                         </template>
                     </Column>
-                    <Column field="name" header="Name" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                    <Column field="name" header="Carrying Capacity" :sortable="true"
+                        headerStyle="width:14%; min-width:10rem;">
                         <template #body="slotProps">
                             <span class="p-column-title">Name</span>
-                            {{ slotProps.data.name }}
+                            {{ slotProps.data.capacity }} Tons
                         </template>
                     </Column>
-                    <Column header="Image" headerStyle="width:14%; min-width:10rem;">
+                    <Column header="Truck Images" headerStyle="width:14%; min-width:10rem;">
                         <template #body="slotProps">
                             <span class="p-column-title">Image</span>
-                            <img :src="'/demo/images/product/' + slotProps.data.image" :alt="slotProps.data.image" class="shadow-2" width="100" />
+                            <img :src="slotProps.data.image" :alt="slotProps.data.image"
+                                class="shadow-2" width="100" />
                         </template>
                     </Column>
-                    <Column field="price" header="Price" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+                    <Column field="price" header="Truck Type" :sortable="true" headerStyle="width:14%; min-width:8rem;">
                         <template #body="slotProps">
                             <span class="p-column-title">Price</span>
-                            {{ formatCurrency(slotProps.data.price) }}
+                            {{ slotProps.data.price}}
                         </template>
                     </Column>
-                    <Column field="category" header="Category" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                    <Column field="category" header="Is Assured?" :sortable="true"
+                        headerStyle="width:14%; min-width:10rem;">
                         <template #body="slotProps">
                             <span class="p-column-title">Category</span>
-                            {{ slotProps.data.category }}
+                            {{ slotProps.data.isInsuared }}
                         </template>
                     </Column>
                     <Column field="rating" header="Reviews" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                         <template #body="slotProps">
-                            <span class="p-column-title">Rating</span>
-                            <Rating :modelValue="slotProps.data.rating" :readonly="true" :cancel="false" />
+                            <span class="p-column-title">Reviews</span>
+                            {{ slotProps.data.rating }}
                         </template>
                     </Column>
-                    <Column field="inventoryStatus" header="Status" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+                    <!-- <Column field="inventoryStatus" header="Status" :sortable="true"
+                        headerStyle="width:14%; min-width:10rem;">
                         <template #body="slotProps">
                             <span class="p-column-title">Status</span>
-                            <Tag :severity="getBadgeSeverity(slotProps.data.inventoryStatus)">{{ slotProps.data.inventoryStatus }}</Tag>
+                            <Tag :severity="getBadgeSeverity(slotProps.data.inventoryStatus)">{{
+                                slotProps.data.inventoryStatus }}</Tag>
                         </template>
-                    </Column>
+                    </Column> -->
                     <Column headerStyle="min-width:10rem;">
                         <template #body="slotProps">
-                            <Button icon="pi pi-pencil" class="mr-2" severity="success" rounded @click="editProduct(slotProps.data)" />
-                            <Button icon="pi pi-trash" class="mt-2" severity="warning" rounded @click="confirmDeleteProduct(slotProps.data)" />
+                            <Button icon="pi pi-pencil" class="mr-2" severity="success" rounded
+                                @click="editProduct(slotProps.data)" />
+                            <Button icon="pi pi-trash" class="mt-2" severity="warning" rounded
+                                @click="confirmDeleteProduct(slotProps.data)" />
                         </template>
                     </Column>
                 </DataTable>
 
-                <Dialog v-model:visible="productDialog" :style="{ width: '650px' }" header="Create Cargo" :modal="true" class="p-fluid">
-                    <form @submit.prevent="saveProduct">
-                    <div class="field">
-                        <label for="name">Cargo Name</label>
-                        <InputText id="name" v-model.trim="cargoname" required="true" autofocus :invalid="submitted && !cargoname" placeholder="13Tons of Coal " />
-                        <small class="p-invalid" v-if="submitted && !cargoname">Cargo name is required.</small>
-                    </div>
-                    <div class="field">
-                        <label for="name">Cargo Weight in Tons</label>
-                        <InputNumber id="name" v-model.trim="weight" required="true" autofocus :invalid="submitted && !weight" placeholder="13 " />
-                        <small class="p-invalid" v-if="submitted && !weight">Cargo weight is required.</small>
-                    </div>
+                <Dialog v-model:visible="productDialog" :style="{ width: '650px' }" header="Create Cargo" :modal="true"
+                    class="p-fluid">
+                    <form @submit.prevent="saveFleet" ref="fomu">
+                        <div class="field">
+                            <label for="platenumber">Fleet Plate Number</label>
+                            <InputText id="platenumber" v-model.trim="platenumber" required autofocus
+                                :class="{ 'p-invalid': submitted && !platenumber }" placeholder="T123DZB"
+                                name="platenumber" />
+                            <small class="p-invalid" v-if="submitted && !platenumber">Fleet plate number is
+                                required.</small>
+                        </div>
+                        <div class="field">
+                            <label for="capacity">Carrying Capacity</label>
+                            <InputNumber id="capacity" v-model.number="weight" required
+                                :class="{ 'p-invalid': submitted && !weight }" placeholder="13" name="capacity" />
+                            <small class="p-invalid" v-if="submitted && !weight">Carrying capacity is required.</small>
+                        </div>
 
-                    <div class="field">
-                        <label for="name">Cargo Dimensions in Metres</label>
-                        <InputText id="name" v-model.trim="dimensions" required="true" autofocus :invalid="submitted && !dimensions" placeholder="110x5x3 meters" />
-                        <small class="p-invalid" v-if="submitted && !dimensions">Name is required.</small>
-                    </div>
+                        <div class="field">
+                            <label for="vehicleType">Fleet Type</label>
+                            <Dropdown id="vehicleType" v-model="selectedFleetType" :options="fleetype"
+                                optionLabel="name" name="vehicleType" placeholder="Select Fleet Type"
+                                optionValue="id" />
+                        </div>
 
-                    <div class="field">
-                        <label for="inventoryStatus" class="mb-3">Cargo Type</label>
-                        <!-- <Dropdown id="inventoryStatus" v-model="selectedCargoType" :options="cargotype" optionLabel="label" placeholder="Select a Status">
-                            
-                        </Dropdown> -->
-                        <Dropdown v-model="selectedCargoType" :options="cargotype" filter optionLabel="name" 
-                            placeholder="Select Cargo Type">
-                            <template #value="slotProps">
-                                <div v-if="slotProps.name && slotProps.name.value">
-                                    <span :class="'product-badge status-' + slotProps.name.value">{{ slotProps.name.label }}</span>
+                        <div class="field">
+                            <label class="mb-3">Is Insured?</label>
+                            <div class="formgrid grid">
+                                <div class="field-radiobutton col-6">
+                                    <RadioButton id="category1" name="isInsuared" value="true" v-model="isInsured" />
+                                    <label for="category1" class="p-2">Yes</label>
                                 </div>
-                                <div v-else-if="slotProps.name && !slotProps.name.value">
-                                    <span :class="'product-badge status-' + slotProps.name.toLowerCase()">{{ slotProps.name }}</span>
+                                <div class="field-radiobutton col-6">
+                                    <RadioButton id="category2" name="isInsured" value="false" v-model="isInsured" />
+                                    <label for="category2" class="p-2">No</label>
                                 </div>
-                                <span v-else>
-                                    {{ slotProps.placeholder }}
-                                </span>
-                            </template>
-                        </Dropdown>
-                    </div>
-
-                    <div class="formgrid grid">
-                        <div class="field col">
-                        <label class="mb-3">Is the Cargo Fragile ?</label>
-                        <div class="formgrid grid">
-                            <div class="field-radiobutton col-6">
-                                <RadioButton id="category1" name="category" value="Accessories" v-model="flagile" />
-                                <label for="category1">Yes</label>
-                            </div>
-                            <div class="field-radiobutton col-6">
-                                <RadioButton id="category2" name="category" value="Clothing" v-model="flagile" />
-                                <label for="category2">No</label>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="field col">
-                        <label class="mb-3">Is the Cargo Temperature Sensitve ?</label>
-                        <div class="formgrid grid">
-                            <div class="field-radiobutton col-6">
-                                <RadioButton id="category1" name="category" value="Accessories" v-model="tempsensitive" />
-                                <label for="category1">Yes</label>
+                        <div class="field">
+                            <div class="flex items-center justify-center w-full">
+                                <label for="dropzone-file"
+                                    class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                    <div class="pt-5 pb-6 mx-auto text-center">
+                                        <svg class="w-2 h-2 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                                        </svg>
+                                        <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                            <span class="font-semibold">Click to upload</span> or drag and drop
+                                        </p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX.
+                                            800x400px)</p>
+                                    </div>
+                                    <input id="dropzone-file" ref="files" type="file" class="hidden" name="images"
+                                        @change="onUpload" multiple />
+                                </label>
                             </div>
-                            <div class="field-radiobutton col-6">
-                                <RadioButton id="category2" name="category" value="Clothing" v-model="tempsensitive" />
-                                <label for="category2">No</label>
-                            </div>
                         </div>
-                    </div>
-                    </div>
 
-                    <div class="field">
-                        <label for="description">Special Handling Instruction</label>
-                        <Textarea id="description" v-model="handlingInstruction" required="true" rows="3" cols="20" />
-                    </div>
-
-                    <div class="formgrid grid">
-                        <div class="field col">
-                            <label for="pickup">Origin / Pickup Location</label>
-                            <InputText id="pickup" v-model="origin" mode="currency" locale="en-US" :invalid="submitted && !origin" :required="true" />
-                            <small class="p-invalid" v-if="submitted && !origin">Pickup Location is required.</small>
+                        <div class="mt-3">
+                            <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" class="mr-2" />
+                            <Button label="Save" icon="pi pi-check" type="submit" class="ml-2" />
                         </div>
-                        <div class="field col">
-                            <label for="destination">Destination or Drop Point</label>
-                            <InputText id="destination" v-model="destination" integeronly :invalid="submitted && !destination"/>
-                            <small class="p-invalid" v-if="submitted && !destination">Destination Location is required.</small>
-
-                        </div>
-                    </div>
-
-                    
-                    <div class="formgrid grid">
-                        <div class="field col">
-                            <label for="receiver">Receiver's Name</label>
-                            <InputText id="receiver" v-model="receiverName" mode="currency" currency="USD" locale="en-US" :invalid="submitted && !receiverName" :required="true" />
-                            <small class="p-invalid" v-if="submitted && !receiverName">Receiver is required.</small>
-                        </div>
-                        <div class="field col">
-                            <label for="quantity">Receiver's Contact Address</label>
-                            <InputText id="quantity" v-model="receiverContact" integeronly :invalid="submitted && !receiverContact" :required="true"/>
-                            <small class="p-invalid" v-if="submitted && !receiverContact">Receiver is required.</small>
-
-                        </div>
-                    </div>
-
-                    <div class="formgrid grid">
-                        <div class="field col">
-                            <label for="price">Document Name</label>
-                            <InputText id="price" v-model="cargoDocumentName" mode="currency" currency="USD" locale="en-US" :invalid="submitted && !cargoDocumentName" :required="true" />
-                            <small class="p-invalid" v-if="submitted && !cargoDocumentName">Document name is required.</small>
-                        </div>
-                        <div class="field col">
-                            <label for="quantity">&nbsp;</label>
-                            <FileUpload mode="basic" name="cargoDocument" :maxFileSize="1000000" chooseLabel="Browse Document"  v-model="cargoDocument" @upload="onUpload"/>
-                        </div>
-                        
-                    </div>
-                    <Button label="Cancel" icon="pi pi-times" text="" @click="hideDialog" />
-                    <Button label="Save" icon="pi pi-check" type="submit" />
-                </form>
-                   
+                    </form>
                 </Dialog>
 
-                <Dialog v-model:visible="deleteProductDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+                <Dialog v-model:visible="deleteProductDialog" :style="{ width: '450px' }" header="Confirm"
+                    :modal="true">
                     <div class="flex align-items-center justify-content-center">
                         <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                        <span v-if="product"
-                            >Are you sure you want to delete <b>{{ product.name }}</b
-                            >?</span
-                        >
+                        <span v-if="product">Are you sure you want to delete <b>{{ product.name }}</b>?</span>
                     </div>
                     <template #footer>
                         <Button label="No" icon="pi pi-times" text @click="deleteProductDialog = false" />
@@ -465,10 +367,11 @@ const initFilters = () => {
                     </template>
                 </Dialog>
 
-                <Dialog v-model:visible="deleteProductsDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+                <Dialog v-model:visible="deleteProductsDialog" :style="{ width: '450px' }" header="Confirm"
+                    :modal="true">
                     <div class="flex align-items-center justify-content-center">
                         <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                        <span v-if="product">Are you sure you want to delete the selected products?</span>
+                        <span>Are you sure you want to delete the selected products?</span>
                     </div>
                     <template #footer>
                         <Button label="No" icon="pi pi-times" text @click="deleteProductsDialog = false" />

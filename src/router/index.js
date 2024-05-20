@@ -182,6 +182,18 @@ const router = createRouter({
             ]
         },
         {
+            path:'/users',
+            name:'users-index',
+            component: AppLayout,
+            children :[
+                {
+                    path: '',
+                    name: 'users-home',
+                    component: () => import('@/views/pages/fleet/CreateFleet.vue')
+                },
+            ]
+        },
+        {
             path: '/landing',
             name: 'landing',
             component: () => import('@/views/pages/Landing.vue')

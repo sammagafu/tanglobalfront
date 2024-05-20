@@ -118,7 +118,7 @@ const pinia = createPinia()
 const app = createApp(App);
 
 app.use(router);
-app.use(PrimeVue, { ripple: true });
+app.use(PrimeVue, { ripple: true },{unstyled: true});
 app.use(ToastService);
 app.use(DialogService);
 app.use(ConfirmationService);
