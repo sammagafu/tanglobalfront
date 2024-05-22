@@ -61,6 +61,31 @@ const isOutsideClicked = (event) => {
 
     return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
 };
+const items = [
+    {
+        label: 'Update',
+        icon: 'pi pi-refresh',
+        command: () => {
+            toast.add({ severity: 'success', summary: 'Updated', detail: 'Data Updated', life: 3000 });
+        }
+    },
+    {
+        label: 'Delete',
+        icon: 'pi pi-times',
+        command: () => {
+            toast.add({ severity: 'warn', summary: 'Delete', detail: 'Data Deleted', life: 3000 });
+        }
+    },
+    {
+        label: 'Vue Website',
+        icon: 'pi pi-external-link',
+        command: () => {
+            window.location.href = 'https://vuejs.org/';
+        }
+    },
+    { label: 'Upload', icon: 'pi pi-upload', to: '/fileupload' }
+];
+
 </script>
 
 <template>
@@ -83,7 +108,7 @@ const isOutsideClicked = (event) => {
                 <i class="pi pi-calendar"></i>
                 <span>Calendar</span>
             </button>
-            <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
+            <button :model=items class="p-link layout-topbar-button">
                 <i class="pi pi-user"></i>
                 <span>Profile</span>
             </button>
@@ -91,6 +116,11 @@ const isOutsideClicked = (event) => {
                 <i class="pi pi-cog"></i>
                 <span>Settings</span>
             </button>
+            <Dropdown :model="items">
+                <template #trigger>
+                    <i v-badge.danger class="pi pi-envelope" style="font-size: 2rem; cursor: pointer" />
+                </template>
+            </Dropdown>    
         </div>
     </div>
 </template>

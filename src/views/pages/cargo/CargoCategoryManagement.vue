@@ -18,7 +18,7 @@
                     </template>
                 </Toolbar>
 
-                <DataTable ref="dt" :value="fleetType" paginator :rows="10">
+                <DataTable ref="dt" :value="cargotype" paginator :rows="10">
 
                     <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
                     <Column field="name" header="Cargo Category Name" :sortable="true" headerStyle="width:75%; min-width:10rem;">
@@ -43,16 +43,16 @@
 import { ref, onBeforeMount } from 'vue';
 import apiService from '@/services/apiService'
 
-const fleetType = ref([])
-const getFleetType = () => {
+const cargotype = ref([])
+const getCargoType = () => {
     apiService.get('cargo/type').then(response => {
-        fleetType.value = response.data
+        cargotype.value = response.data
         console.log(response);
     }).catch(error => {
         console.log(error);
     })
 }
 onBeforeMount(() => {
-    getFleetType();
+    getCargoType();
 });
 </script>

@@ -20,6 +20,7 @@ const model = ref([
                 icon: 'pi pi-fw pi-box',
                 to: '/cargo/create'
             },
+            
         ]
     },
 
@@ -86,7 +87,7 @@ const adminMenu = ref([
             {
                 label: 'Users',
                 icon: 'pi pi-fw pi-box',
-                to: '/cargo/create'
+                to: '/users/'
             },
         ]
     },
@@ -98,22 +99,22 @@ const adminMenu = ref([
             {
                 label: 'Companies',
                 icon: 'pi pi-fw pi-box',
-                to: '/cargo/create'
+                to: '/company'
             },
         ]
     },
     {
         label: 'Manage Cargo',
         icon: 'pi pi-fw pi-briefcase',
-        to: '/cargo',
+        to: '/cargo/',
         items: [
             {
                 label: 'Cargos',
                 icon: 'pi pi-fw pi-box',
-                to: '/cargo/create'
+                to: '/cargo'
             },
             {
-                label: 'Cargo Types',
+                label: 'Cargo Categories',
                 icon: 'pi pi-fw pi-box',
                 to: '/cargo/create'
             },
@@ -122,17 +123,17 @@ const adminMenu = ref([
     {
         label: 'Manage Fleet',
         icon: 'pi pi-fw pi-briefcase',
-        to: '/cargo',
+        to: '/fleet/',
         items: [
             {
                 label: 'Fleets',
                 icon: 'pi pi-fw pi-box',
-                to: '/cargo/create'
+                to: '/fleet'
             },
             {
                 label: 'Fleets Types',
                 icon: 'pi pi-fw pi-box',
-                to: '/cargo/create'
+                to: '/fleet/create'
             },
         ]
     },
@@ -151,6 +152,12 @@ const adminMenu = ref([
         </template>
         </div>
         <div v-else-if="authStore.user.is_individual">
+        <template v-for="(item, i) in individualModel" :key="item">
+            <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
+            <li v-if="item.separator" class="menu-separator"></li>
+        </template>
+        </div>
+        <div v-else-if="authStore.user.is_company">
         <template v-for="(item, i) in individualModel" :key="item">
             <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
             <li v-if="item.separator" class="menu-separator"></li>

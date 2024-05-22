@@ -155,12 +155,12 @@ const router = createRouter({
                 {
                     path: '',
                     name: 'cargo-home',
-                    component: () => import('@/views/pages/cargo/CargoManage.vue')
+                    component: () => import('@/views/pages/cargo/CreateCargo.vue')
                 },
                 {
                     path: 'create',
                     name: 'cargo-create',
-                    component: () => import('@/views/pages/cargo/CreateCargo.vue')
+                    component: () => import('@/views/pages/cargo/CargoCategoryManagement.vue')
                 },
             ]
         },
@@ -177,7 +177,7 @@ const router = createRouter({
                 {
                     path: 'create',
                     name: 'fleet-create',
-                    component: () => import('@/views/pages/fleet/CreateFleet.vue')
+                    component: () => import('@/views/pages/fleet/FleetManage.vue')
                 },
             ]
         },
@@ -189,7 +189,21 @@ const router = createRouter({
                 {
                     path: '',
                     name: 'users-home',
-                    component: () => import('@/views/pages/fleet/CreateFleet.vue')
+                    // src/views/pages/cargo/CargoCategoryManagement.vue
+                    component: () => import('@/views/pages/users/ManageUsers.vue')
+                },
+            ]
+        },
+        {
+            path:'/company',
+            name:'company-index',
+            component: AppLayout,
+            children :[
+                {
+                    path: '',
+                    name: 'company-home',
+                    // src/views/pages/cargo/CargoCategoryManagement.vue
+                    component: () => import('@/views/pages/company/CompanyList.vue')
                 },
             ]
         },

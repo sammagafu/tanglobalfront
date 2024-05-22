@@ -1,3 +1,4 @@
+
 <template>
     <div class="grid">
         <div class="col-12">
@@ -18,13 +19,29 @@
                     </template>
                 </Toolbar>
 
-                <DataTable ref="dt" :value="fleetType" paginator :rows="10">
+                <DataTable ref="dt" :value="cargotype" paginator :rows="10">
+                    <template #header>
+                        <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                            <h5 class="m-0">Manage Companies</h5>
+                        </div>
+                    </template>
 
                     <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
-                    <Column field="name" header="Cargo Category Name" :sortable="true" headerStyle="width:75%; min-width:10rem;">
+                    <Column field="companyName" header="Company name" :sortable="true" headerStyle="width:20%; min-width:10rem;">
                     </Column>
 
-                    <Column headerStyle="min-width:10rem;">
+                    <Column field="comapnyTelephone" header="Phone" :sortable="true" headerStyle="width:20%; min-width:10rem;">
+                    </Column>
+
+                    <Column field="comapnyEmail" header="Email" :sortable="true" headerStyle="width:20%; min-width:10rem;">
+                    </Column>
+
+                    <Column field="comapnyWebsite" header="Website" :sortable="true" headerStyle="width:20%; min-width:10rem;">
+                    </Column>
+                    <Column field="is_approved" header="Apporoved" :sortable="true" headerStyle="width:20%; min-width:10rem;">
+                    </Column>
+
+                    <Column headerStyle="min-width:10rem;" header="Actions">
                         <template #body="slotProps">
                             <Button icon="pi pi-pencil" class="mr-2" severity="success" rounded
                                 @click="editProduct(slotProps.data)" />
@@ -43,16 +60,16 @@
 import { ref, onBeforeMount } from 'vue';
 import apiService from '@/services/apiService'
 
-const fleetType = ref([])
-const getFleetType = () => {
-    apiService.get('cargo/type').then(response => {
-        fleetType.value = response.data
+const company = ref([])
+const getCargoType = () => {
+    apiService.get('company').then(response => {
+        company.value = response.data
         console.log(response);
     }).catch(error => {
         console.log(error);
     })
 }
 onBeforeMount(() => {
-    getFleetType();
+    getCargoType();
 });
 </script>

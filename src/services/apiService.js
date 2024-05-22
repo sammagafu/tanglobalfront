@@ -14,6 +14,7 @@ const setupInterceptors = () => {
       const accessToken = useAuthStore().accessToken?.value; // Check if accessToken exists
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
+        console.log(accessToken);
       }
       return config;
     },

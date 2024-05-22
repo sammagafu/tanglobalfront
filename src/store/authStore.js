@@ -7,12 +7,10 @@ export const useAuthStore = defineStore({
     refreshToken: localStorage.getItem('refreshToken') || null,
     rememberMe: localStorage.getItem('rememberMe') === 'true',
     user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
+    isAuthenticated: localStorage.getItem('accessToken') !== null,
   }),
 
   getters: {
-    isAuthenticated() {
-      return this.accessToken !== null;
-    },
     getAccessToken() {
       return this.accessToken;
     },
@@ -35,6 +33,7 @@ export const useAuthStore = defineStore({
       } else {
         localStorage.removeItem('rememberMe');
       }
+      this.isAuthenticated = true;
     },
 
     clearTokens() {
@@ -43,6 +42,7 @@ export const useAuthStore = defineStore({
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('rememberMe');
+      this.isAuthenticated = false;
     },
 
     setUser(userData) {

@@ -225,7 +225,6 @@ app.component('TreeSelect', TreeSelect);
 app.component('TreeTable', TreeTable);
 app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('VirtualScroller', VirtualScroller);
-
-app.use(pinia)
+app.use(pinia);
 app.use(VueAxios, apiService);
 app.mount('#app');
