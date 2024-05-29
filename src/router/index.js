@@ -198,12 +198,32 @@ const router = createRouter({
             path:'/company',
             name:'company-index',
             component: AppLayout,
+            meta: {
+                requiresAuth: true // Add meta field for authentication guard
+              },
             children :[
                 {
                     path: '',
                     name: 'company-home',
                     // src/views/pages/cargo/CargoCategoryManagement.vue
-                    component: () => import('@/views/pages/company/CompanyList.vue')
+                    component: () => import('@/views/pages/company/CompanyList.vue'),
+                    
+                },
+            ]
+        },
+        {
+            path:'/profile',
+            name:'my-profile',
+            component: AppLayout,
+            children :[
+                {
+                    path: '',
+                    name: 'profile',
+                    // src/views/pages/cargo/CargoCategoryManagement.vue
+                    component: () => import('@/views/pages/auth/UpdateUserDetails.vue'),
+                    meta: {
+                        requiresAuth: true // Add meta field for authentication guard
+                      },
                 },
             ]
         },

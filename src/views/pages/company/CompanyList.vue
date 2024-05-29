@@ -19,7 +19,7 @@
                     </template>
                 </Toolbar>
 
-                <DataTable ref="dt" :value="cargotype" paginator :rows="10">
+                <DataTable ref="dt" :value="company" paginator :rows="10">
                     <template #header>
                         <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                             <h5 class="m-0">Manage Companies</h5>

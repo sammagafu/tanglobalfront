@@ -21,35 +21,14 @@ const logoUrl = computed(() => {
 
 
 const login = async () => {
-  try {
-    const response = await apiService.post('auth/token/', {
-      email: email.value,
-      password: password.value,
-    });
-    const { access, refresh } = response.data;
-    authStore.setTokens(access, refresh, rememberMe.value);
-    apiService.defaults.headers.common['Authorization'] = `Bearer ${access}`;
-
-    // Fetch user data immediately after successful login
-    await getUserData();
-  } catch (error) {
-    console.error('Error logging in:', error);
-    // Handle error, such as displaying a message to the user
-  }
-};
-
-const getUserData = async () => {
-  try {
-    const response = await apiService.get('auth/users/me/');
-    const userData = response.data;
-    authStore.setUser(userData)
-    // Do something with the user data, such as storing it in a Vuex store
-  } catch (error) {
-    console.error('Error fetching user data:', error);
-  }
-  router.push('/');
-};
-
+      try {
+        await authStore.login(email.value, password.value, rememberMe.value);
+        router.push('/');
+      } catch (error) {
+        // Handle login error
+        console.error(error);
+      }
+    };
 
 </script>
 

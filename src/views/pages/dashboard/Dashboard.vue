@@ -126,7 +126,7 @@ watch(
 </script>
 
 <template>
-    <Dialog v-model:visible="visible" modal header="Please Update Your Company Information" :style="{ width: '30rem' }" class="text-center">
+    <Dialog v-model:visible="authStore.memberships" modal header="Please Update Your Company Information" :style="{ width: '30rem' }" class="text-center">
     <div class="flex align-items-center gap-3 mb-3">
         <label for="username" class="font-semibold w-6rem">Username</label>
         <InputText id="username" class="flex-auto" autocomplete="off" />
@@ -142,8 +142,8 @@ watch(
 </Dialog>
 
 
-    <div class="py-4 text-xl font-bold" v-if="userData">
-        Welcome {{userData.full_name}}
+    <div class="py-4 text-xl font-bold" v-if="authStore.user.full_name">
+        Welcome {{authStore.user.full_name}}
     </div>
     <div class="grid">
         <div class="col-12 lg:col-6 xl:col-3">

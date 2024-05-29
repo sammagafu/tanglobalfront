@@ -1,10 +1,10 @@
 <script setup>
-import { ref } from 'vue';
+import { ref,computed } from 'vue';
 import { useAuthStore } from '@/store/authStore'; // Import your auth store
 import AppMenuItem from './AppMenuItem.vue';
 
 const authStore = useAuthStore();
-const model = ref([
+const companyModel = ref([
     {
         label: 'Home',
         items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
@@ -139,37 +139,46 @@ const adminMenu = ref([
     },
 
 ])
+
+// Use computed properties to dynamically select the menu items based on user role
+const menuItems = computed(() => {
+  if (authStore.user) {
+    if (authStore.user.is_superuser && authStore.user.is_staff) {
+      return adminMenu;
+    } else if (authStore.user.is_individual) {
+      return individualModel;
+    } else if (authStore.user.is_company) {
+      return companyModel;
+    }
+  }
+  return [];
+});
+
 </script>
 
 <template>
     <ul class="layout-menu">
-         
-        <div v-if="authStore.user.is_superuser === true && authStore.user.is_staff">
-            {{ authStore.user }}
-        <template v-for="(item, i) in adminMenu" :key="item">
+      <template v-if="authStore.user">
+        <template v-if="authStore.user.is_superuser && authStore.user.is_staff">
+          <template v-for="(item, i) in adminMenu" :key="i">
             <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
-            <li v-if="item.separator" class="menu-separator"></li>
+            <li v-else-if="item.separator" class="menu-separator"></li>
+          </template>
         </template>
-        </div>
-        <div v-else-if="authStore.user.is_individual">
-        <template v-for="(item, i) in individualModel" :key="item">
+        <template v-else-if="authStore.user.is_individual">
+          <template v-for="(item, i) in individualModel" :key="i">
             <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
-            <li v-if="item.separator" class="menu-separator"></li>
+            <li v-else-if="item.separator" class="menu-separator"></li>
+          </template>
         </template>
-        </div>
-        <div v-else-if="authStore.user.is_company">
-        <template v-for="(item, i) in individualModel" :key="item">
+        <template v-else-if="authStore.user.is_company">
+          <template v-for="(item, i) in companyModel" :key="i">
             <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
-            <li v-if="item.separator" class="menu-separator"></li>
+            <li v-else-if="item.separator" class="menu-separator"></li>
+          </template>
         </template>
-        </div>
-        <!-- <li>
-            456671
-            <a href="https://www.primefaces.org/primeblocks-vue/#/" target="_blank">
-                <img src="/layout/images/banner-primeblocks.png" alt="Prime Blocks" class="w-full mt-3" />
-            </a>
-        </li> -->
+      </template>
     </ul>
-</template>
-
+  </template>
+  
 <style lang="scss" scoped></style>

@@ -33,6 +33,23 @@
                         </template>
                     </Column>
                 </DataTable>
+
+                <Dialog v-model:visible="categoryNameDialog" :style="{ width: '500px' }" header="Create Cargo" :modal="true"
+                    class="p-fluid">
+                    <form @submit.prevent="createCateogyname" ref="fomu">
+                        <div class="field">
+                            <label for="name">Cargo Category Name {{ categoryname }}</label>
+                            <InputText id="name" name="categoryname" v-model="categoryname" required="true" autofocus
+                                :invalid="submitted && !categoryname" placeholder="13Tons of Coal " />
+                            <small class="p-invalid" v-if="submitted && !categoryname">Cargo name is required.</small>
+                        </div>
+
+                        <Button label="Cancel" icon="pi pi-times" text="" @click="hideDialog" />
+                        <Button label="Save" icon="pi pi-check" type="submit" />
+                    </form>
+
+                </Dialog>
+
             </div>
         </div>
     </div>
@@ -44,6 +61,9 @@ import { ref, onBeforeMount } from 'vue';
 import apiService from '@/services/apiService'
 
 const cargotype = ref([])
+const categoryNameDialog = ref(false);
+const submitted = ref(false);
+const categoryname =ref()
 const getCargoType = () => {
     apiService.get('cargo/type').then(response => {
         cargotype.value = response.data
@@ -52,7 +72,24 @@ const getCargoType = () => {
         console.log(error);
     })
 }
+
+const createCateogyname = () => {
+    apiService.get('cargo/type').then(response => {
+        cargotype.value = response.data
+        console.log(response);
+    }).catch(error => {
+        console.log(error);
+    })
+}
+
+const openNew = () => {
+    // cargotype.value = {};
+    // submitted.value = false;
+    categoryNameDialog.value = true;
+};
+
 onBeforeMount(() => {
     getCargoType();
 });
+
 </script>

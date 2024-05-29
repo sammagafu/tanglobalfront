@@ -45,7 +45,7 @@ import apiService from '@/services/apiService'
 
 const fleetType = ref([])
 const getFleetType = () => {
-    apiService.get('cargo/type').then(response => {
+    apiService.get('fleet/type').then(response => {
         fleetType.value = response.data
         console.log(response);
     }).catch(error => {

@@ -36,15 +36,27 @@
 
                     <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
                     <Column field="is_active" header="Is active" :sortable="true" headerStyle="width:15%; min-width:10rem;">
+                        <!-- <Tag :value="apiData ? 'Primary' : ''" :severity="apiData ? 'success' : 'danger'">
+                                {{ is_active ? 'active' : 'not active' }}
+                         </Tag> -->
                     </Column>
 
                     <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
-                    <Column field="is_staff" header="Is company" :sortable="true" headerStyle="width:15%; min-width:10rem;">
+                    <Column field="is_company" header="Is company" :sortable="true" headerStyle="width:15%; min-width:10rem;">
+                         <template #body="slotProps">
+                            <Tag :severity="slotProps.data.is_company ? 'success':'danger'">{{ slotProps.data.is_company ? 'Company' : 'Not Company' }}</Tag>
+                        </template>
                     </Column>
 
-                    <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
-                    <Column field="is_individual" header="Is Indiviual" :sortable="true" headerStyle="width:15%; min-width:10rem;">
+                    <Column field="is_individual" header="Is company" :sortable="true" headerStyle="width:15%; min-width:10rem;">
+                         <template #body="slotProps">
+                            <Tag :severity="slotProps.data.is_individual ? 'success':'danger'">{{ slotProps.data.is_individual ? 'Individual' : 'Not Individual' }}</Tag>
+                        </template>
                     </Column>
+
+                    // <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
+                    // <Column field="is_individual" header="Is Indiviual" :sortable="true" headerStyle="width:15%; min-width:10rem;">
+                    // </Column>
 
                     <Column headerStyle="min-width:10rem;" header="Actions">
                         <template #body="slotProps">

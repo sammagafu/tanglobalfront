@@ -76,7 +76,7 @@ const saveCargo = async () => {
         const response = await apiService.post('cargo/', formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
-        if (response.status === 200) {
+        if (response.status === 200||201) {
             toast.add({ severity: 'success', summary: 'Success', detail: 'Cargo saved successfully' });
             resetForm();
             hideDialog();
@@ -388,11 +388,11 @@ const initFilters = () => {
                             <div class="field col-12 md:col-6">
                                 <!-- Bind input field to document name using v-model -->
                                 <label :for="'supportDocumentName_' + index">Document {{ index + 1 }}</label>
-                                <InputText :id="'supportDocumentName_' + index" type="text" v-model="document.name" />
+                                <InputText name="document_name" :id="'supportDocumentName_' + index" type="text" v-model="document.name" />
                             </div>
                             <div class="field col-12 md:col-4">
                                 <label :for="'supportDocumentFile_' + index">Document {{ index + 1 }}</label>
-                                <FileUpload :id="'document_' + index" mode="basic" :accept="'.pdf,.jpg,.jpeg,.png,.doc,.docx'" @onSelect="addDocument($event, index)" />
+                                <FileUpload name="document_file" customUpload :id="'document_' + index" mode="basic" :accept="'.pdf,.jpg,.jpeg,.png,.doc,.docx'" @onSelect="addDocument($event, index)" />
                             </div>
                             <div class="field col-12 md:col-2">
                                 <label>&nbsp;</label>
@@ -422,18 +422,6 @@ const initFilters = () => {
                     <template #footer>
                         <Button label="No" icon="pi pi-times" text @click="deleteProductDialog = false" />
                         <Button label="Yes" icon="pi pi-check" text @click="deleteProduct" />
-                    </template>
-                </Dialog>
-
-                <Dialog v-model:visible="deleteProductsDialog" :style="{ width: '450px' }" header="Confirm"
-                    :modal="true">
-                    <div class="flex align-items-center justify-content-center">
-                        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                        <span v-if="product">Are you sure you want to delete the selected products?</span>
-                    </div>
-                    <template #footer>
-                        <Button label="No" icon="pi pi-times" text @click="deleteProductsDialog = false" />
-                        <Button label="Yes" icon="pi pi-check" text @click="deleteSelectedProducts" />
                     </template>
                 </Dialog>
             </div>

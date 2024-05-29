@@ -61,35 +61,43 @@ const isOutsideClicked = (event) => {
 
     return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
 };
-const items = [
+const items = ref([
     {
-        label: 'Update',
-        icon: 'pi pi-refresh',
-        command: () => {
-            toast.add({ severity: 'success', summary: 'Updated', detail: 'Data Updated', life: 3000 });
-        }
-    },
-    {
-        label: 'Delete',
-        icon: 'pi pi-times',
-        command: () => {
-            toast.add({ severity: 'warn', summary: 'Delete', detail: 'Data Deleted', life: 3000 });
-        }
-    },
-    {
-        label: 'Vue Website',
-        icon: 'pi pi-external-link',
-        command: () => {
-            window.location.href = 'https://vuejs.org/';
-        }
-    },
-    { label: 'Upload', icon: 'pi pi-upload', to: '/fileupload' }
-];
+        label: 'Profile',
+        items: [
+            {
+                label: 'Settings',
+                icon: 'pi pi-cog'
+            },
+            {
+                label: 'Update Account',
+                icon: 'pi pi-cog',
+                command: () => {
+                    router.push({name:'profile'})
+                }
+
+            },
+            {
+                label: 'Logout',
+                icon: 'pi pi-sign-out',
+                command: () => {
+                    authStore.logout()
+                    router.push({name:'login'})
+                }
+            },
+        ]
+    }
+]);
+
+const menu = ref();
+const toggle = (event) => {
+    menu.value.toggle(event);
+};
 
 </script>
 
 <template>
-    <div class="layout-topbar">
+    <div class="container mx-auto layout-topbar">
         <router-link to="/" class="layout-topbar-logo">
             <img src="@/assets/branding/favicon.svg" alt="logo" />
             <span>Tanglobal</span>
@@ -104,23 +112,16 @@ const items = [
         </button>
 
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
-            <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-                <i class="pi pi-calendar"></i>
-                <span>Calendar</span>
-            </button>
-            <button :model=items class="p-link layout-topbar-button">
+            <button :model=items class="p-link layout-topbar-button" @click="toggle">
                 <i class="pi pi-user"></i>
                 <span>Profile</span>
+                <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" />
             </button>
-            <button @click="onSettingsClick()" class="p-link layout-topbar-button">
-                <i class="pi pi-cog"></i>
-                <span>Settings</span>
-            </button>
-            <Dropdown :model="items">
-                <template #trigger>
-                    <i v-badge.danger class="pi pi-envelope" style="font-size: 2rem; cursor: pointer" />
-                </template>
-            </Dropdown>    
+
+            <!-- <div class="">
+                <Button icon="pi pi-user" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" class="p-link layout-topbar-button" />
+                <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" />
+            </div> -->
         </div>
     </div>
 </template>
