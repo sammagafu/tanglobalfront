@@ -27,6 +27,47 @@ const isInsured = ref(null);
 const submitted = ref(false);
 const files = ref(null);
 
+const getSeverity = (product) => {
+    switch (product.inventoryStatus) {
+        case 'INSTOCK':
+            return 'success';
+
+        case 'LOWSTOCK':
+            return 'warning';
+
+        case 'OUTOFSTOCK':
+            return 'danger';
+
+        default:
+            return null;
+    }
+}
+
+
+const sortKey = ref();
+const sortOrder = ref();
+const sortField = ref();
+const sortOptions = ref([
+    { label: 'Price High to Low', value: '!price' },
+    { label: 'Price Low to High', value: 'price' },
+]);
+const onSortChange = (event) => {
+    const value = event.value.value;
+    const sortValue = event.value;
+
+    if (value.indexOf('!') === 0) {
+        sortOrder.value = -1;
+        sortField.value = value.substring(1, value.length);
+        sortKey.value = sortValue;
+    }
+    else {
+        sortOrder.value = 1;
+        sortField.value = value;
+        sortKey.value = sortValue;
+    }
+};
+
+
 // method to get all categories
 const getCategories = () => {
     apiService.get('fleet/type')
@@ -211,80 +252,43 @@ const initFilters = () => {
                     </template>
                 </Toolbar>
 
-                <DataTable ref="dt" :value="fleet" v-model:selection="selectedProducts" dataKey="id" :paginator="true"
-                    :rows="10" :filters="filters"
-                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                    :rowsPerPageOptions="[5, 10, 25]"
-                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products">
+                <DataView :value="fleet" :sortOrder="sortOrder" :sortField="sortField">
                     <template #header>
-                        <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                            <h5 class="m-0">Manage Fleet</h5>
-                            <IconField iconPosition="left" class="block mt-2 md:mt-0">
-                                <InputIcon class="pi pi-search" />
-                                <InputText class="w-full sm:w-auto" v-model="filters['global'].value"
-                                    placeholder="Search..." />
-                            </IconField>
+                        <Dropdown v-model="sortKey" :options="sortOptions" optionLabel="label"
+                            placeholder="Sort By Price" @change="onSortChange($event)" />
+                    </template>
+                    <template #list="slotProps">
+                        <div class="grid grid-nogutter">
+                            <div v-for="(item, index) in slotProps.items" :key="index" class="col-12">
+                                <div class="flex flex-column sm:flex-row sm:align-items-center p-4 gap-3"
+                                    :class="{ 'border-top-1 surface-border': index !== 0 }">
+                                
+                                    <div
+                                        class="flex flex-column md:flex-row justify-content-between md:align-items-center flex-1 gap-4">
+                                        <div
+                                            class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
+                                            <div>
+                                                <span class="font-medium text-secondary text-sm">Car Plate Number</span>
+                                                <div class="text-lg font-medium text-900 mt-2">{{ item.platenumber }}</div>
+                                                <div class="text-lg font-medium text-900">Carrying Capacity{{ item.capacity }} Tons</div>
+                                                
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-column md:align-items-end gap-5">
+                                            <!-- <span class="text-xl font-semibold text-900">Carrying Capacity{{ item.capacity }} Tons</span> -->
+                                            <div class="flex flex-row-reverse md:flex-row gap-2">
+                                                <Button icon="pi pi-search" outlined></Button>
+                                                <Button icon="pi pi-shopping-cart" label="Buy Now"
+                                                    :disabled="item.inventoryStatus === 'OUTOFSTOCK'"
+                                                    class="flex-auto md:flex-initial white-space-nowrap"></Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </template>
-
-                    <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-                    <Column field="platenumber" header="Plate Number" :sortable="true"
-                        headerStyle="width:14%; min-width:10rem;">
-                        <template #body="slotProps">
-                            <span class="p-column-title">Plate Number</span>
-                            {{ slotProps.data.platenumber }}
-                        </template>
-                    </Column>
-                    <Column field="name" header="Carrying Capacity" :sortable="true"
-                        headerStyle="width:14%; min-width:10rem;">
-                        <template #body="slotProps">
-                            <span class="p-column-title">Name</span>
-                            {{ slotProps.data.capacity }} Tons
-                        </template>
-                    </Column>
-                    <Column header="Truck Images" headerStyle="width:14%; min-width:10rem;">
-                        <template #body="slotProps">
-                            <span class="p-column-title">Image</span>
-                            <img :src="slotProps.data.image" :alt="slotProps.data.image"
-                                class="shadow-2" width="100" />
-                        </template>
-                    </Column>
-                    <Column field="price" header="Truck Type" :sortable="true" headerStyle="width:14%; min-width:8rem;">
-                        <template #body="slotProps">
-                            <span class="p-column-title">Price</span>
-                            {{ slotProps.data.price}}
-                        </template>
-                    </Column>
-                    <Column field="category" header="Is Assured?" :sortable="true"
-                        headerStyle="width:14%; min-width:10rem;">
-                        <template #body="slotProps">
-                            <span class="p-column-title">Category</span>
-                            {{ slotProps.data.isInsuared }}
-                        </template>
-                    </Column>
-                    <Column field="rating" header="Reviews" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-                        <template #body="slotProps">
-                            <span class="p-column-title">Reviews</span>
-                            {{ slotProps.data.rating }}
-                        </template>
-                    </Column>
-                    <!-- <Column field="inventoryStatus" header="Status" :sortable="true"
-                        headerStyle="width:14%; min-width:10rem;">
-                        <template #body="slotProps">
-                            <span class="p-column-title">Status</span>
-                            <Tag :severity="getBadgeSeverity(slotProps.data.inventoryStatus)">{{
-                                slotProps.data.inventoryStatus }}</Tag>
-                        </template>
-                    </Column> -->
-                    <Column headerStyle="min-width:10rem;">
-                        <template #body="slotProps">
-                            <Button icon="pi pi-pencil" class="mr-2" severity="success" rounded
-                                @click="editProduct(slotProps.data)" />
-                            <Button icon="pi pi-trash" class="mt-2" severity="warning" rounded
-                                @click="confirmDeleteProduct(slotProps.data)" />
-                        </template>
-                    </Column>
-                </DataTable>
+                </DataView>
 
                 <Dialog v-model:visible="productDialog" :style="{ width: '650px' }" header="Create Cargo" :modal="true"
                     class="p-fluid">

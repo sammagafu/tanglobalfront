@@ -238,45 +238,56 @@ const initFilters = () => {
                     </template>
                 </Toolbar>
 
-                <DataTable ref="dt" :value="companyCargo" paginator :rows="10">
-
-                    <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
-                    <Column field="cargo" header="Code" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-                    </Column>
-                    <Column field="dimensions" header="Dimensions (m)" :sortable="true"
-                        headerStyle="width:14%; min-width:10rem;">
-                    </Column>
-                    <Column field="fragile" header="Flagile" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-                        <template #body="slotProps">
-                            <span class="p-column-title">Status</span>
-                            <Tag :severity="slotProps.fragile">{{ slotProps.data.fragile }}</Tag>
-                        </template>
-                    </Column>
-                    <Column field="temperature_sensitive" header="Sensintive" :sortable="true"
-                        headerStyle="width:14%; min-width:10rem;">
-                        <template #body="slotProps">
-                            <span class="p-column-title">Status</span>
-                            <Tag :severity="slotProps.temperature_sensitive">{{ slotProps.data.temperature_sensitive}}</Tag>
-                        </template>
-                    </Column>
-
-                    <Column field="cargo_type.name" header="Cargo Type" :sortable="true"
-                        headerStyle="width:14%; min-width:10rem;">
-                    </Column>
-                    <Column field="origin" header="From" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-                    </Column>
-                    <Column field="destination" header="Destination" :sortable="true"
-                        headerStyle="width:14%; min-width:10rem;">
-                    </Column>
-                    <Column headerStyle="min-width:10rem;">
-                        <template #body="slotProps">
-                            <Button icon="pi pi-pencil" class="mr-2" severity="success" rounded
-                                @click="editProduct(slotProps.data)" />
-                            <Button icon="pi pi-trash" class="mt-2" severity="warning" rounded
-                                @click="confirmDeleteProduct(slotProps.data)" />
-                        </template>
-                    </Column>
-                </DataTable>
+                <DataView :value="companyCargo" :sortOrder="sortOrder" :sortField="sortField">
+                    <template #header>
+                        <Dropdown v-model="sortKey" :options="sortOptions" optionLabel="label"
+                            placeholder="Sort By Price" @change="onSortChange($event)" />
+                    </template>
+                    <template #list="slotProps">
+                        <div class="grid grid-nogutter">
+                            <div v-for="(item, index) in slotProps.items" :key="index" class="col-12">
+                                <div class="flex flex-column sm:flex-row sm:align-items-center p-4 gap-3"
+                                    :class="{ 'border-top-1 surface-border': index !== 0 }">
+                                
+                                    <div
+                                        class="flex flex-column md:flex-row justify-content-between md:align-items-center flex-1 gap-4">
+                                        <div
+                                            class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
+                                            <div>
+                                                <span class="font-medium text-secondary text-sm my-4">Cargo Information</span>
+                                                <div class="text-lg font-medium text-900">Cargo Name : {{ item.cargo }}</div>
+                                                <div class="font-baseline font-medium flex flex-row">From : {{ item.origin }}</div>
+                                                <div class="font-baseline font-medium flex flex-row">Flagile : {{ item.fragile }}</div>
+                                                
+                                            </div>
+                                            
+                                        </div>
+                                        <div
+                                            class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
+                                            <div>
+                                                <span class="font-medium text-secondary text-sm">&nbsp;</span>
+                                                <div class="font-baseline font-medium">Weight : {{ item.weight }} Tons</div>
+                                                <div class="font-baseline font-medium">To : {{ item.destination }}</div>
+                                                <div class="font-baseline font-medium">Temperature Senistive : {{ item.temperature_sensitive }}</div>
+                                                
+                                            </div>
+                                            
+                                        </div> 
+                                        <div class="flex flex-column md:align-items-end gap-5">
+                                            <!-- <span class="text-xl font-semibold text-900">Carrying Capacity{{ item.capacity }} Tons</span> -->
+                                            <div class="flex flex-row-reverse md:flex-row gap-2">
+                                                <Button icon="pi pi-search" outlined></Button>
+                                                <Button icon="pi pi-shopping-cart" label="Bid to transport"
+                                                    :disabled="item.inventoryStatus === 'OUTOFSTOCK'"
+                                                    class="flex-auto md:flex-initial white-space-nowrap"></Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </DataView>
 
 
                 <Dialog v-model:visible="productDialog" :style="{ width: '650px' }" header="Create Cargo" :modal="true"
