@@ -122,6 +122,24 @@ const adminMenu = ref([
             },
         ]
     },
+    {
+        label: 'Updates',
+        icon: 'pi pi-fw pi-briefcase',
+        to: '/updates/',
+        items: [
+            {
+                label: 'Manage Updates',
+                icon: 'pi pi-fw pi-bell',
+                to: '/updates/manage'
+            },
+            {
+                label: 'Manage Updates Type',
+                icon: 'pi pi-fw pi-bell',
+                to: '/updates/type'
+            },
+
+        ]
+    },
 
 ])
 

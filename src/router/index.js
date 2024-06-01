@@ -228,6 +228,45 @@ const router = createRouter({
             ]
         },
         {
+            path:'/updates/',
+            name:'updates',
+            component: AppLayout,
+            children :[
+                {
+                    path: 'manage',
+                    name: 'update-manage',
+                    component: () => import('@/views/pages/updates/CreateUpdate.vue'),
+                    meta: {
+                        requiresAuth: true // Add meta field for authentication guard
+                      },
+                },
+                {
+                    path: 'type',
+                    name: 'update-type',
+                    component: () => import('@/views/pages/updates/CreateUpdateCategory.vue'),
+                    meta: {
+                        requiresAuth: true // Add meta field for authentication guard
+                      },
+                },
+                {
+                    path: 'my-updates',
+                    name: ':slug',
+                    component: () => import('@/views/pages/updates/MyUpdates.vue'),
+                    meta: {
+                        requiresAuth: true // Add meta field for authentication guard
+                      },
+                },
+                {
+                    path: ':slug',
+                    name: 'update-details',
+                    component: () => import('@/views/pages/updates/UpdateDetails.vue'),
+                    meta: {
+                        requiresAuth: true // Add meta field for authentication guard
+                      },
+                },
+            ]
+        },
+        {
             path: '/landing',
             name: 'landing',
             component: () => import('@/views/pages/Landing.vue')

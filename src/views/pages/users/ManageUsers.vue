@@ -54,10 +54,6 @@
                         </template>
                     </Column>
 
-                    // <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
-                    // <Column field="is_individual" header="Is Indiviual" :sortable="true" headerStyle="width:15%; min-width:10rem;">
-                    // </Column>
-
                     <Column headerStyle="min-width:10rem;" header="Actions">
                         <template #body="slotProps">
                             <Button icon="pi pi-pencil" class="mr-2" severity="success" rounded
