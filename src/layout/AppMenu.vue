@@ -25,13 +25,26 @@ const fleetCompany = ref([
     {
         label: 'Fleet',
         icon: 'pi pi-fw pi-bookmark',
-        to: '/pages',
+        // to: '/pages',
         items: [
             {
                 label: 'My Fleet',
                 icon: 'pi pi-fw pi-car',
                 to: '/fleet'
             },
+        ]
+    },
+    {
+        label: 'Updates',
+        icon: 'pi pi-fw pi-briefcase',
+        // to: '/cargo',
+        items: [
+            {
+                label: 'My Updates',
+                icon: 'pi pi-bell',
+                to: '/updates/mine'
+            },
+            
         ]
     },
 
@@ -151,6 +164,19 @@ const cargoCompany = ref([
 
     {
         label: 'Cargo',
+        icon: 'pi pi-fw pi-briefcase',
+        to: '/cargo',
+        items: [
+            {
+                label: 'My Cargos',
+                icon: 'pi pi-fw pi-box',
+                to: '/cargo/create'
+            },
+            
+        ]
+    },
+    {
+        label: 'My Updates',
         icon: 'pi pi-fw pi-briefcase',
         to: '/cargo',
         items: [

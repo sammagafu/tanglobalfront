@@ -17,13 +17,14 @@ const selectedProducts = ref([]);
 const dt = ref(null);
 const filters = ref({});
 
-const fleetype = ref([]);
+const updatetype = ref([]);
 
 // form fields
 const fomu = ref(null)
 const updatename = ref('');
 const weight = ref(null);
-const updatetype = ref(null);
+const updateType = ref(null);
+const update = ref('')
 const isInsured = ref(null);
 const submitted = ref(false);
 const files = ref(null);
@@ -55,7 +56,7 @@ const onSortChange = (event) => {
 const getCategories = () => {
     apiService.get('update/update-types/')
         .then(response => {
-            fleetype.value = response.data;
+            updatetype.value = response.data;
         })
         .catch(error => {
             console.log(error);
@@ -73,32 +74,25 @@ const getFleet = () => {
         });
 };
 
-const saveFleet = () => {
+const saveUpdate = () => {
     submitted.value = true;
-    if (!platenumber.value || !weight.value || !selectedFleetType.value) {
+    if (!updatename.value || !updateType.value || !updateType.value) {
         return;
     }
 
     const formData = new FormData(fomu.value);
-    formData.append('platenumber', platenumber.value);
-    formData.append('capacity', weight.value);
-    formData.append('vehicleTypes', selectedFleetType.value);
-    formData.append('isInsured', isInsured.value);
-
-    for (let i = 0; i < files.value.files.length; i++) {
-        formData.append('images', files.value.files[i]);
-    }
+    formData.append('name', updatename.value);
+    formData.append('update_type', updateType.value);
+    formData.append('content', update.value);
 
     console.log('Form submitted', {
-        platenumber: platenumber.value,
-        weight: weight.value,
-        selectedFleetType: selectedFleetType.value,
-        isInsured: isInsured.value,
-        files: files.value.files
+        'updatename': updatename.value,
+        'updateType': updateType.value,
+        'content': update.value,
     });
 
 
-    apiService.post('fleet/', formData, {
+    apiService.post('update/', formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
@@ -115,15 +109,10 @@ const saveFleet = () => {
         });
 };
 
-const onUpload = (event) => {
-    console.log('Files selected:', event.target.files);
-    files.value = event.target;
-};
-
 const resetForm = () => {
     platenumber.value = '';
     weight.value = null;
-    selectedFleetType.value = null;
+    updateType.value = null;
     isInsured.value = null;
     if (files.value) {
         files.value.value = ''; // Clear file input
@@ -251,9 +240,8 @@ const initFilters = () => {
                                         <div
                                             class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
                                             <div>
-                                                <span class="font-medium text-secondary text-sm">Car Plate Number</span>
-                                                <div class="text-lg font-medium text-900 mt-2">{{ item.platenumber }}</div>
-                                                <div class="text-lg font-medium text-900">Carrying Capacity{{ item.capacity }} Tons</div>
+                                                <span class="font-medium text-secondary text-sm">{{ item.name }}</span>
+                                                <div class="text-lg font-medium text-900 mt-2">{{ item.content }}</div>
                                                 
                                             </div>
                                         </div>
@@ -261,8 +249,7 @@ const initFilters = () => {
                                             <!-- <span class="text-xl font-semibold text-900">Carrying Capacity{{ item.capacity }} Tons</span> -->
                                             <div class="flex flex-row-reverse md:flex-row gap-2">
                                                 <Button icon="pi pi-search" outlined></Button>
-                                                <Button icon="pi pi-shopping-cart" label="Buy Now"
-                                                    :disabled="item.inventoryStatus === 'OUTOFSTOCK'"
+                                                <Button icon="pi pi-shopping-cart" label="Approve Update"
                                                     class="flex-auto md:flex-initial white-space-nowrap"></Button>
                                             </div>
                                         </div>
@@ -275,7 +262,7 @@ const initFilters = () => {
 
                 <Dialog v-model:visible="productDialog" :style="{ width: '850px' }" header="Create Cargo" :modal="true"
                     class="p-fluid">
-                    <form @submit.prevent="saveFleet" ref="fomu">
+                    <form @submit.prevent="saveUpdate" ref="fomu">
                         <div class="field">
                             <label for="Update name">Update Name</label>
                             <InputText id="updatename" v-model.trim="updatename" required autofocus
@@ -285,15 +272,15 @@ const initFilters = () => {
                         </div>
                         <div class="field">
                             <label for="updatetype">Update Type</label>
-                            <Dropdown id="updatetype" v-model="selectedFleetType" :options="fleetype"
+                            <Dropdown id="updatetype" v-model="updateType" :options="updatetype"
                                 optionLabel="name" name="updatetype" placeholder="Select Update Type"
                                 optionValue="id" />
                         </div>
 
                         <div class="field">
-                            <label for="capacity">Update</label>
-                            <Editor v-model="capacity" editorStyle="height: 240px" />
-                            <small class="p-invalid" v-if="submitted && !weight">Carrying capacity is required.</small>
+                            <label for="update">Update Details</label>
+                            <Editor v-model="update" editorStyle="height: 240px" />
+                            <small class="p-invalid" v-if="submitted && !update">Updte is required.</small>
                         </div>
 
                         <div class="mt-3">

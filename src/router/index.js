@@ -249,8 +249,8 @@ const router = createRouter({
                       },
                 },
                 {
-                    path: 'my-updates',
-                    name: ':slug',
+                    path: 'mine',
+                    name: 'my-updates',
                     component: () => import('@/views/pages/updates/MyUpdates.vue'),
                     meta: {
                         requiresAuth: true // Add meta field for authentication guard
