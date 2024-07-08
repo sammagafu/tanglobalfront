@@ -17,261 +17,273 @@ const logoUrl = computed(() => {
 </script>
 
 <template>
-    <div class="surface-0 flex justify-content-center">
-        <div id="home" class="landing-wrapper overflow-hidden">
-            <div class="py-4 px-4 mx-0 md:mx-6 lg:mx-8 lg:px-8 flex align-items-center justify-content-between relative lg:static mb-3">
-                <a class="flex align-items-center" href="#"> <img :src="logoUrl" alt="Sakai Logo" height="50" class="mr-0 lg:mr-2" /><span class="text-900 font-medium text-2xl line-height-3 mr-8">SAKAI</span> </a>
-                <a class="cursor-pointer block lg:hidden text-700 p-ripple" v-ripple v-styleclass="{ selector: '@next', enterClass: 'hidden', leaveToClass: 'hidden', hideOnOutsideClick: true }">
-                    <i class="pi pi-bars text-4xl"></i>
-                </a>
-                <div class="align-items-center surface-0 flex-grow-1 justify-content-between hidden lg:flex absolute lg:static w-full left-0 px-6 lg:px-0 z-2" style="top: 120px">
-                    <ul class="list-none p-0 m-0 flex lg:align-items-center select-none flex-column lg:flex-row cursor-pointer">
-                        <li>
-                            <a @click="smoothScroll('#hero')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
-                                <span>Home</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a @click="smoothScroll('#features')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
-                                <span>Features</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a @click="smoothScroll('#highlights')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
-                                <span>Highlights</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a @click="smoothScroll('#pricing')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
-                                <span>Pricing</span>
-                            </a>
-                        </li>
-                    </ul>
-                    <div class="flex justify-content-between lg:block border-top-1 lg:border-top-none surface-border py-3 lg:py-0 mt-3 lg:mt-0">
-                        <Button label="Login" class="p-button-text p-button-rounded border-none font-light line-height-2 text-blue-500"></Button>
-                        <Button label="Register" class="p-button-rounded border-none ml-5 font-light text-white line-height-2 bg-blue-500"></Button>
+    <div class="main font-sans">
+        <section
+            class="xl:bg-contain bg-top bg-no-repeat -mt-24 pt-24 bg-[url('@/assets/img/background/intersect.svg')]">
+            <div class="px-4 mx-auto">
+                <div class="pt-12 text-center">
+                    <div class="max-w-2xl mx-auto mb-8">
+                        <h2
+                            class="text-3xl lg:text-6xl lg:leading-normal mb-4 font-bold font-heading wow animate__animated animate__fadeIn">
+                            Connecting Truck Owners and Shippers for Effortless Logistics</h2>
+                        <p class="text-gray-400 leading-relaxed wow animate__animated animate__fadeIn">Welcome to
+                            TanGlobal Logistics Group, where we connect truck owners and shippers for effortless
+                            logistics. Our platform streamlines the process of transporting goods, ensuring efficiency,
+                            transparency, and reliability every step of the way.
+
+                        </p>
+                    </div>
+                    <div>
+                        <a class="bg-blue-600 text-white py-4 px-8 mr-2 hover-up-2" href="#key-features">Key
+                            Features</a>
+                        <a class="bg-primary py-4 px-8 mr-2 hover-up-2" data-wow-delay=".3s" href="#how-we-work">How We
+                            Work?</a>
                     </div>
                 </div>
             </div>
-
-            <div
-                id="hero"
-                class="flex flex-column pt-4 px-4 lg:px-8 overflow-hidden"
-                style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), radial-gradient(77.36% 256.97% at 77.36% 57.52%, rgb(238, 239, 175) 0%, rgb(195, 227, 250) 100%); clip-path: ellipse(150% 87% at 93% 13%)"
-            >
-                <div class="mx-4 md:mx-8 mt-0 md:mt-4">
-                    <h1 class="text-6xl font-bold text-gray-900 line-height-2"><span class="font-light block">Eu sem integer</span>eget magna fermentum</h1>
-                    <p class="font-normal text-2xl line-height-3 md:mt-3 text-gray-700">Sed blandit libero volutpat sed cras. Fames ac turpis egestas integer. Placerat in egestas erat...</p>
-                    <Button label="Get Started" class="p-button-rounded text-xl border-none mt-5 bg-blue-500 font-normal text-white line-height-3 px-3"></Button>
-                </div>
-                <div class="flex justify-content-center md:justify-content-end">
-                    <img src="/demo/images/landing/screen-1.png" alt="Hero Image" class="w-9 md:w-auto" />
+            <div class="relative max-w-6xl mt-16 md:mt-8 mb-8 mx-auto">
+                <img src="@/assets/img/background/pattern.png" alt="" />
+                <div class="absolute" style="top: 9%; left: 14%; width: 72%; height: 66%">
+                    <img class="jump rounded" src="@/assets/img/background/dashboard.png" alt="" />
                 </div>
             </div>
-
-            <div id="features" class="py-4 px-4 lg:px-8 mt-5 mx-0 lg:mx-8">
-                <div class="grid justify-content-center">
-                    <div class="col-12 text-center mt-8 mb-4">
-                        <h2 class="text-900 font-normal mb-2">Marvelous Features</h2>
-                        <span class="text-600 text-2xl">Placerat in egestas erat...</span>
-                    </div>
-
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0">
+            <div class="container px-24 mx-auto">
+                <div class="flex flex-wrap justify-between pt-8 pb-16">
+                    <div class="hover-up-5 flex w-1/2 lg:w-auto py-4" data-wow-delay=".2s">
                         <div
-                            style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(253, 228, 165, 0.2), rgba(187, 199, 205, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(187, 199, 205, 0.2))"
-                        >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <div class="flex align-items-center justify-content-center bg-yellow-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                                    <i class="pi pi-fw pi-users text-2xl text-yellow-700"></i>
-                                </div>
-                                <h5 class="mb-2 text-900">Easy to Use</h5>
-                                <span class="text-600">Posuere morbi leo urna molestie.</span>
-                            </div>
+                            class="flex justify-center items-center bg-green-100 text-green-900 rounded-xl h-12 w-12 sm:h-20 sm:w-20">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div class="sm:py-2 ml-2 sm:ml-6">
+                            <span class="sm:text-2xl font-bold font-heading">+ </span>
+                            <span class="sm:text-2xl font-bold font-heading count">150</span>
+                            <p class="text-xs sm:text-base text-gray-400">Annual Partner</p>
                         </div>
                     </div>
-
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0">
+                    <div class="hover-up-5 flex w-1/2 lg:w-auto py-4" data-wow-delay=".4s">
                         <div
-                            style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(145, 226, 237, 0.2), rgba(251, 199, 145, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(172, 180, 223, 0.2))"
-                        >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <div class="flex align-items-center justify-content-center bg-cyan-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                                    <i class="pi pi-fw pi-palette text-2xl text-cyan-700"></i>
-                                </div>
-                                <h5 class="mb-2 text-900">Fresh Design</h5>
-                                <span class="text-600">Semper risus in hendrerit.</span>
-                            </div>
+                            class="flex justify-center items-center bg-green-100 text-green-900 rounded-xl h-12 w-12 sm:h-20 sm:w-20">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div class="sm:py-2 ml-2 sm:ml-6">
+                            <span class="sm:text-2xl font-bold font-heading">+ </span>
+                            <span class="sm:text-2xl font-bold font-heading count">58</span>
+                            <span class="sm:text-2xl font-bold font-heading"> k </span>
+                            <p class="text-xs sm:text-base text-gray-400">Completed Projects</p>
                         </div>
                     </div>
-
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pb-5 mt-4 lg:mt-0">
+                    <div class="hover-up-5 flex w-1/2 lg:w-auto py-4" data-wow-delay=".6s">
                         <div
-                            style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(145, 226, 237, 0.2), rgba(172, 180, 223, 0.2)), linear-gradient(180deg, rgba(172, 180, 223, 0.2), rgba(246, 158, 188, 0.2))"
-                        >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <div class="flex align-items-center justify-content-center bg-indigo-200" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                                    <i class="pi pi-fw pi-map text-2xl text-indigo-700"></i>
-                                </div>
-                                <h5 class="mb-2 text-900">Well Documented</h5>
-                                <span class="text-600">Non arcu risus quis varius quam quisque.</span>
-                            </div>
+                            class="flex justify-center items-center bg-green-100 text-green-900 rounded-xl h-12 w-12 sm:h-20 sm:w-20">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div class="sm:py-2 ml-2 sm:ml-6">
+                            <span class="sm:text-2xl font-bold font-heading">+ </span>
+                            <span class="sm:text-2xl font-bold font-heading count">500</span>
+                            <p class="text-xs sm:text-base text-gray-400">Happy Customers</p>
                         </div>
                     </div>
-
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0">
+                    <div class="hover-up-5 flex w-1/2 lg:w-auto py-4" data-wow-delay=".8s">
                         <div
-                            style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(187, 199, 205, 0.2), rgba(251, 199, 145, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(145, 210, 204, 0.2))"
-                        >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <div class="flex align-items-center justify-content-center bg-bluegray-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                                    <i class="pi pi-fw pi-id-card text-2xl text-bluegray-700"></i>
-                                </div>
-                                <h5 class="mb-2 text-900">Responsive Layout</h5>
-                                <span class="text-600">Nulla malesuada pellentesque elit.</span>
-                            </div>
+                            class="flex justify-center items-center bg-green-100 text-green-900 rounded-xl h-12 w-12 sm:h-20 sm:w-20">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z">
+                                </path>
+                            </svg>
                         </div>
-                    </div>
-
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 lg:pb-5 mt-4 lg:mt-0">
-                        <div
-                            style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(187, 199, 205, 0.2), rgba(246, 158, 188, 0.2)), linear-gradient(180deg, rgba(145, 226, 237, 0.2), rgba(160, 210, 250, 0.2))"
-                        >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <div class="flex align-items-center justify-content-center bg-orange-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                                    <i class="pi pi-fw pi-star text-2xl text-orange-700"></i>
-                                </div>
-                                <h5 class="mb-2 text-900">Clean Code</h5>
-                                <span class="text-600">Condimentum lacinia quis vel eros.</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pb-5 mt-4 lg:mt-0">
-                        <div
-                            style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(251, 199, 145, 0.2), rgba(246, 158, 188, 0.2)), linear-gradient(180deg, rgba(172, 180, 223, 0.2), rgba(212, 162, 221, 0.2))"
-                        >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <div class="flex align-items-center justify-content-center bg-pink-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                                    <i class="pi pi-fw pi-moon text-2xl text-pink-700"></i>
-                                </div>
-                                <h5 class="mb-2 text-900">Dark Mode</h5>
-                                <span class="text-600">Convallis tellus id interdum velit laoreet.</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 mt-4 lg:mt-0">
-                        <div
-                            style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(145, 210, 204, 0.2), rgba(160, 210, 250, 0.2)), linear-gradient(180deg, rgba(187, 199, 205, 0.2), rgba(145, 210, 204, 0.2))"
-                        >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <div class="flex align-items-center justify-content-center bg-teal-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                                    <i class="pi pi-fw pi-shopping-cart text-2xl text-teal-700"></i>
-                                </div>
-                                <h5 class="mb-2 text-900">Ready to Use</h5>
-                                <span class="text-600">Mauris sit amet massa vitae.</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg:pr-5 mt-4 lg:mt-0">
-                        <div
-                            style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(145, 210, 204, 0.2), rgba(212, 162, 221, 0.2)), linear-gradient(180deg, rgba(251, 199, 145, 0.2), rgba(160, 210, 250, 0.2))"
-                        >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <div class="flex align-items-center justify-content-center bg-blue-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                                    <i class="pi pi-fw pi-globe text-2xl text-blue-700"></i>
-                                </div>
-                                <h5 class="mb-2 text-900">Modern Practices</h5>
-                                <span class="text-600">Elementum nibh tellus molestie nunc non.</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 md:col-12 lg:col-4 p-0 lg-4 mt-4 lg:mt-0">
-                        <div
-                            style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(160, 210, 250, 0.2), rgba(212, 162, 221, 0.2)), linear-gradient(180deg, rgba(246, 158, 188, 0.2), rgba(212, 162, 221, 0.2))"
-                        >
-                            <div class="p-3 surface-card h-full" style="border-radius: 8px">
-                                <div class="flex align-items-center justify-content-center bg-purple-200 mb-3" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                                    <i class="pi pi-fw pi-eye text-2xl text-purple-700"></i>
-                                </div>
-                                <h5 class="mb-2 text-900">Privacy</h5>
-                                <span class="text-600">Neque egestas congue quisque.</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div
-                        class="col-12 mt-8 mb-8 p-2 md:p-8"
-                        style="border-radius: 20px; background: linear-gradient(0deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), radial-gradient(77.36% 256.97% at 77.36% 57.52%, #efe1af 0%, #c3dcfa 100%)"
-                    >
-                        <div class="flex flex-column justify-content-center align-items-center text-center px-3 py-3 md:py-0">
-                            <h3 class="text-gray-900 mb-2">Joséphine Miller</h3>
-                            <span class="text-gray-600 text-2xl">Peak Interactive</span>
-                            <p class="text-gray-900 sm:line-height-2 md:line-height-4 text-2xl mt-4" style="max-width: 800px">
-                                “Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.”
-                            </p>
-                            <img src="/demo/images/landing/peak-logo.svg" class="mt-4" alt="Company logo" />
+                        <div class="sm:py-2 ml-2 sm:ml-6">
+                            <span class="sm:text-2xl font-bold font-heading">+ </span>
+                            <span class="sm:text-2xl font-bold font-heading count">320</span>
+                            <p class="text-xs sm:text-base text-gray-400">Research Work</p>
                         </div>
                     </div>
                 </div>
             </div>
+        </section>
+        <!--Features-->
+        <section class="py-12 md:py-16 lg:py-32 overflow-x-hidden" id="key-features">
+            <div class="container px-4 mx-auto">
+                <div class="flex flex-wrap lg:flex-nowrap">
+                    <div class="w-full lg:w-1/2">
+                        <div class="lg:py-6 lg:pr-32 wow animate__animated animate__fadeIn" data-wow-delay=".3s">
+                            <div class="mb-4">
+                                <span
+                                    class="text-xs py-1 px-3 text-blue-500 font-semibold bg-blue-50 rounded-xl wow animate__animated animate__fadeInDown"
+                                    data-wow-delay=".9s">Why choose us</span>
+                                <h2 class="text-4xl mt-5 font-bold font-heading" data-wow-delay=".3s">Key Features</h2>
+                            </div>
 
-            <div id="highlights" class="py-4 px-4 lg:px-8 mx-0 my-6 lg:mx-8">
-                <div class="text-center">
-                    <h2 class="text-900 font-normal mb-2">Powerful Everywhere</h2>
-                    <span class="text-600 text-2xl">Amet consectetur adipiscing elit...</span>
-                </div>
+                            <div class="flex items-start py-4" data-wow-delay=".7s">
+                                <div class="w-8 mr-5 text-green-500">
+                                    <svg class="w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="mb-2 text-xl font-semibold font-heading">User-Friendly Interface</h3>
+                                    <p class="text-gray-500 font-medium">The platform features an intuitive interface
+                                        for easy navigation, registration, and onboarding. Advanced algorithms swiftly
+                                        match users with the ideal trucks, complemented by a seamless booking system
+                                        with integrated calendar for managing upcoming hires.</p>
+                                </div>
+                            </div>
 
-                <div class="grid mt-8 pb-2 md:pb-8">
-                    <div class="flex justify-content-center col-12 lg:col-6 bg-purple-100 p-0 flex-order-1 lg:flex-order-0" style="border-radius: 8px">
-                        <img src="/demo/images/landing/mockup.svg" class="w-11" alt="mockup mobile" />
-                    </div>
 
-                    <div class="col-12 lg:col-6 my-auto flex flex-column lg:align-items-end text-center lg:text-right">
-                        <div class="flex align-items-center justify-content-center bg-purple-200 align-self-center lg:align-self-end" style="width: 4.2rem; height: 4.2rem; border-radius: 10px">
-                            <i class="pi pi-fw pi-mobile text-5xl text-purple-700"></i>
+                            <div class="flex items-start py-4" data-wow-delay=".7s">
+                                <div class="w-8 mr-5 text-green-500">
+                                    <svg class="w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="mb-2 text-xl font-semibold font-heading">Real-Time Tracking and
+                                        Transparent Pricing</h3>
+                                    <p class="text-gray-500 font-medium">Our app features GPS-enabled real-time
+                                        tracking, allowing users to monitor truck locations and estimated arrival times.
+                                        Transparent pricing ensures clear, upfront costs with detailed breakdowns and
+                                        invoices for each transaction, fostering trust and clarity.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start py-4" data-wow-delay=".9s">
+                                <div class="w-8 mr-5 text-green-500">
+                                    <svg class="w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="mb-2 text-xl font-semibold font-heading">Security</h3>
+                                    <p class="text-gray-500 font-medium">The app offers secure payment options,
+                                        including credit/debit cards, mobile money, and bank transfers, all with
+                                        encrypted transactions. Our 24/7 customer support is accessible via chat, phone,
+                                        and email, supported by a comprehensive help center for common queries.</p>
+                                </div>
+                            </div>
                         </div>
-                        <h2 class="line-height-1 text-900 text-4xl font-normal">Congue Quisque Egestas</h2>
-                        <span class="text-700 text-2xl line-height-3 ml-0 md:ml-2" style="max-width: 650px"
-                            >Lectus arcu bibendum at varius vel pharetra vel turpis nunc. Eget aliquet nibh praesent tristique magna sit amet purus gravida. Sit amet mattis vulputate enim nulla aliquet.</span
-                        >
                     </div>
-                </div>
-
-                <div class="grid my-8 pt-2 md:pt-8">
-                    <div class="col-12 lg:col-6 my-auto flex flex-column text-center lg:text-left lg:align-items-start">
-                        <div class="flex align-items-center justify-content-center bg-yellow-200 align-self-center lg:align-self-start" style="width: 4.2rem; height: 4.2rem; border-radius: 10px">
-                            <i class="pi pi-fw pi-desktop text-5xl text-yellow-700"></i>
+                    <div class="relative w-full lg:w-1/2 my-12 lg:my-0">
+                        <div class="wow animate__animated animate__fadeInRight" data-wow-delay=".5s">
+                            <img class="jump relative mx-auto rounded-xl w-full z-10"
+                                src="@/assets/img/placeholder/img-1.png" alt="" />
+                            <img class="absolute top-0 left-0 w-40 -ml-12 -mt-12" src="@/assets/branding/blob-tear.svg"
+                                alt="" />
+                            <img class="absolute bottom-0 right-0 w-40 -mr-12 -mb-12"
+                                src="@/assets/branding/blob-tear.svg" alt="" />
                         </div>
-                        <h2 class="line-height-1 text-900 text-4xl font-normal">Celerisque Eu Ultrices</h2>
-                        <span class="text-700 text-2xl line-height-3 mr-0 md:mr-2" style="max-width: 650px"
-                            >Adipiscing commodo elit at imperdiet dui. Viverra nibh cras pulvinar mattis nunc sed blandit libero. Suspendisse in est ante in. Mauris pharetra et ultrices neque ornare aenean euismod elementum nisi.</span
-                        >
-                    </div>
-
-                    <div class="flex justify-content-end flex-order-1 sm:flex-order-2 col-12 lg:col-6 bg-yellow-100 p-0" style="border-radius: 8px">
-                        <img src="/demo/images/landing/mockup-desktop.svg" class="w-11" alt="mockup" />
                     </div>
                 </div>
             </div>
+        </section>
 
-            <div id="pricing" class="py-4 px-4 lg:px-8 my-2 md:my-4">
-                <div class="text-center">
-                    <h2 class="text-900 font-normal mb-2">Matchless Pricing</h2>
-                    <span class="text-600 text-2xl">Amet consectetur adipiscing elit...</span>
+        <section class="py-20 bg-gray-50" id="how-we-work">
+            <div class="container px-4 mx-auto">
+                <div class="flex flex-wrap items-center justify-between max-w-2xl lg:max-w-full mb-12">
+                    <div class="w-full lg:w-1/2 mb-4 lg:mb-0">
+                        <h2
+                            class="text-3xl md:text-4xl font-bold font-heading wow animate__animated animate__fadeInDown">
+                            <span>How it works</span>
+                            <br />
+                            <span>Seal the Deal, Share Your Zeal</span>
+                        </h2>
+                    </div>
+                    <div class="w-full lg:w-1/2">
+                        <p class="text-gray-400 py-4">Discover a streamlined logistics experience with TanGlobal
+                            Logistics Group. Whether you're a truck owner looking to optimize your fleet or a shipper in
+                            need of reliable transport solutions, our platform simplifies the process from start to
+                            finish.</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-center">
+                    <div class="hover-up-5 px-3 mb-6">
+                        <div class="p-12 bg-white shadow rounded">
+                            <div
+                                class="flex w-12 h-12 mx-auto items-center justify-center text-blue-800 font-bold font-heading bg-blue-200 rounded-full">
+                                1</div>
+                            <img class="h-48 mx-auto my-4" src="@/assets/img/how/web.svg" alt="" />
+                            <h3 class="mb-2 font-bold font-heading">Register Your Trucks</h3>
+                            <p class="text-sm text-gray-400 leading-relaxed">Begin by registering your fleet of trucks
+                                on our platform. Provide details such as type, capacity, and availability to showcase
+                                your offerings.</p>
+                        </div>
+                    </div>
+                    <div class="hover-up-5 px-3 mb-6">
+                        <div class="p-12 bg-white shadow rounded">
+                            <div
+                                class="flex w-12 h-12 mx-auto items-center justify-center text-blue-800 font-bold font-heading bg-blue-200 rounded-full">
+                                2</div>
+                            <img class="h-48 mx-auto my-4" src="@/assets/img/how/team.svg" alt="" />
+                            <h3 class="mb-2 font-bold font-heading">Browse and Match</h3>
+                            <p class="text-sm text-gray-400 leading-relaxed">Shippers can browse available trucks based
+                                on their specific transport needs, utilizing advanced search filters for efficient
+                                matching.</p>
+                        </div>
+                    </div>
+                    <div class="hover-up-5 px-3 mb-6">
+                        <div class="p-12 bg-white shadow rounded">
+                            <div
+                                class="flex w-12 h-12 mx-auto items-center justify-center text-blue-800 font-bold font-heading bg-blue-200 rounded-full">
+                                3</div>
+                            <img class="h-48 mx-auto my-4" src="@/assets/img/how/delivered.svg" alt="" />
+                            <h3 class="mb-2 font-bold font-heading">Complete and Review</h3>
+                            <p class="text-sm text-gray-400 leading-relaxed">After successful delivery, both parties can
+                                finalize the transaction securely and provide feedback to maintain high service
+                                standards.</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="grid justify-content-between mt-8 md:mt-0">
-                    <div class="col-12 lg:col-4 p-0 md:p-3">
-                        <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all" style="border-radius: 10px">
+            </div>
+        </section>
+
+        <section class="py-20 xl:bg-contain bg-top bg-no-repeat bg-[url('@/assets/img/background/intersect.svg')]">
+            <div class="container px-4 mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="max-w-lg mx-auto mb-4 text-4xl font-bold font-heading" data-wow-delay=".2s">
+                        <span>Find the Right Fit for Your Business</span>
+                        <span class="text-blue-500"> choose </span>
+                        <span>your best plan</span>
+                    </h2>
+                    <p class="max-w-sm mx-auto text-lg text-gray-400 wow animate__animated animate__fadeInDown"
+                        data-wow-delay=".5s">Experience premium logistics solutions by joining today!</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 -mx-3">
+                    <div class="w-full md:w-1/2 lg:w-1/3 px-3 mb-6">
+                        <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all"
+                            style="border-radius: 10px">
                             <h3 class="text-900 text-center my-5">Free</h3>
                             <img src="/demo/images/landing/free.svg" class="w-10 h-10 mx-auto" alt="free" />
                             <div class="my-5 text-center">
                                 <span class="text-5xl font-bold mr-2 text-900">$0</span>
                                 <span class="text-600">per month</span>
-                                <Button label="Get Started" class="block mx-auto mt-4 p-button-rounded border-none ml-3 font-light line-height-2 bg-blue-500 text-white"></Button>
+                                <Button label="Get Started"
+                                    class="block mx-auto mt-4 p-2 border-none ml-3 font-light line-height-2 bg-blue-500 text-white"></Button>
                             </div>
                             <Divider class="w-full bg-surface-200"></Divider>
                             <ul class="my-5 list-none p-0 flex text-900 flex-column">
@@ -294,15 +306,16 @@ const logoUrl = computed(() => {
                             </ul>
                         </div>
                     </div>
-
-                    <div class="col-12 lg:col-4 p-0 md:p-3 mt-4 md:mt-0">
-                        <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all" style="border-radius: 10px">
+                    <div class="w-full md:w-1/2 lg:w-1/3 px-3 mb-6">
+                        <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all"
+                            style="border-radius: 10px">
                             <h3 class="text-900 text-center my-5">Startup</h3>
                             <img src="/demo/images/landing/startup.svg" class="w-10 h-10 mx-auto" alt="startup" />
                             <div class="my-5 text-center">
                                 <span class="text-5xl font-bold mr-2 text-900">$1</span>
                                 <span class="text-600">per month</span>
-                                <Button label="Try Free" class="block mx-auto mt-4 p-button-rounded border-none ml-3 font-light line-height-2 bg-blue-500 text-white"></Button>
+                                <Button label="Try Free"
+                                    class="block mx-auto mt-4 p-2 border-none ml-3 font-light line-height-2 bg-blue-500 text-white"></Button>
                             </div>
                             <Divider class="w-full bg-surface-200"></Divider>
                             <ul class="my-5 list-none p-0 flex text-900 flex-column">
@@ -325,15 +338,16 @@ const logoUrl = computed(() => {
                             </ul>
                         </div>
                     </div>
-
-                    <div class="col-12 lg:col-4 p-0 md:p-3 mt-4 md:mt-0">
-                        <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all" style="border-radius: 10px">
+                    <div class="w-full lg:w-1/3 px-3 mb-6">
+                        <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all"
+                            style="border-radius: 10px">
                             <h3 class="text-900 text-center my-5">Enterprise</h3>
                             <img src="/demo/images/landing/enterprise.svg" class="w-10 h-10 mx-auto" alt="enterprise" />
                             <div class="my-5 text-center">
                                 <span class="text-5xl font-bold mr-2 text-900">$999</span>
                                 <span class="text-600">per month</span>
-                                <Button label="Get a Quote" class="block mx-auto mt-4 p-button-rounded border-none ml-3 font-light line-height-2 bg-blue-500 text-white"></Button>
+                                <Button label="Get a Quote"
+                                    class="block mx-auto mt-4 p-2 border-none ml-3 font-light line-height-2 bg-blue-500 text-white"></Button>
                             </div>
                             <Divider class="w-full bg-surface-200"></Divider>
                             <ul class="my-5 list-none p-0 flex text-900 flex-column">
@@ -358,58 +372,88 @@ const logoUrl = computed(() => {
                     </div>
                 </div>
             </div>
-
-            <div class="py-4 px-4 mx-0 mt-8 lg:mx-8">
-                <div class="grid justify-content-between">
-                    <div class="col-12 md:col-2" style="margin-top: -1.5rem">
-                        <a @click="smoothScroll('#home')" class="flex flex-wrap align-items-center justify-content-center md:justify-content-start md:mb-0 mb-3 cursor-pointer">
-                            <img :src="logoUrl" alt="footer sections" width="50" height="50" class="mr-2" />
-                            <h4 class="font-medium text-3xl text-900">SAKAI</h4>
-                        </a>
-                    </div>
-
-                    <div class="col-12 md:col-10 lg:col-7">
-                        <div class="grid text-center md:text-left">
-                            <div class="col-12 md:col-3">
-                                <h4 class="font-medium text-2xl line-height-3 mb-3 text-900">Company</h4>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">About Us</a>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">News</a>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Investor Relations</a>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Careers</a>
-                                <a class="line-height-3 text-xl block cursor-pointer text-700">Media Kit</a>
+        </section>
+        <section class="py-20 bg-top bg-no-repeat bg-[url('@/assets/branding/map.svg')]">
+            <div class="container px-4 mx-auto">
+                <div class="relative py-20 px-4 lg:p-20">
+                    <div class="max-w-lg mx-auto text-center">
+                        <h2 class="mb-4 text-3xl lg:text-4xl font-bold font-heading">
+                            <span>Subscribe now to</span>
+                            <span class="text-blue-500"> Our Newsletter</span>
+                            <span> and get updates.</span>
+                        </h2>
+                        <p class="mb-8 text-gray-400" data-wow-delay=".3s">
+                            All your information is completely confidential</p>
+                        <div class="p-4 bg-white rounded-lg flex flex-col space-y-4 flex-wrap mx-auto"
+                            data-wow-delay=".5s">
+                            <div class="flex w-full md:w-2/3 px-3 mb-3 md:mb-0 md:mr-2 bg-gray-100 rounded">
+                                <label for="subscribe" class="my-auto"><svg class="h-6 w-6 text-gray-500"
+                                        xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" fill="currentColor">
+                                        <path
+                                            d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z">
+                                        </path>
+                                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                                    </svg></label>
+                                <input
+                                    class="w-full py-4 text-xs text-gray-400 font-semibold leading-none bg-gray-100 outline-none flex-grow"
+                                    type="text" placeholder="Type your e-mail" id="subscribe" />
                             </div>
-
-                            <div class="col-12 md:col-3 mt-4 md:mt-0">
-                                <h4 class="font-medium text-2xl line-height-3 mb-3 text-900">Resources</h4>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Get Started</a>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Learn</a>
-                                <a class="line-height-3 text-xl block cursor-pointer text-700">Case Studies</a>
-                            </div>
-
-                            <div class="col-12 md:col-3 mt-4 md:mt-0">
-                                <h4 class="font-medium text-2xl line-height-3 mb-3 text-900">Community</h4>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Discord</a>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Events<img src="/demo/images/landing/new-badge.svg" class="ml-2" /></a>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">FAQ</a>
-                                <a class="line-height-3 text-xl block cursor-pointer text-700">Blog</a>
-                            </div>
-
-                            <div class="col-12 md:col-3 mt-4 md:mt-0">
-                                <h4 class="font-medium text-2xl line-height-3 mb-3 text-900">Legal</h4>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Brand Policy</a>
-                                <a class="line-height-3 text-xl block cursor-pointer mb-2 text-700">Privacy Policy</a>
-                                <a class="line-height-3 text-xl block cursor-pointer text-700">Terms of Service</a>
-                            </div>
+                            <button
+                                class="w-full md:w-auto py-4 px-8 text-xs text-white font-semibold leading-none bg-blue-400 hover:bg-blue-500 rounded"
+                                type="submit">Sign Up</button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
+        <section class="py-20">
+            <!-- <div class="container px-4 mx-auto wow animate__animated animate__fadeIn" data-wow-delay=".3s">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 lg:mb-20 -mx-3 text-center lg:text-left">
+                    <div class="w-full lg:w-1/5 px-3 mb-6 lg:mb-0">
+                        <a class="inline-block mx-auto lg:mx-0 text-3xl font-semibold leading-none" href="index.html">
+                            <img class="h-10" src="assets/imgs/logos/monst-logo.svg" alt="" />
+                        </a>
+                    </div>
+                    <div class="w-full lg:w-2/5 px-3 mb-8 lg:mb-0">
+                        <p
+                            class="max-w-md mx-auto lg:max-w-full lg:mx-0 lg:pr-32 lg:text-lg text-gray-400 leading-relaxed">
+                            Helping you <strong>maximize</strong> operations management with digitization</p>
+                    </div>
+                    <div class="w-full lg:w-1/5 px-3 mb-8 lg:mb-0">
+                        <p class="mb-2 lg:mb-4 lg:text-lg font-bold font-heading text-gray-800">Office</p>
+                        <p class="lg:text-lg text-gray-400">359 Hidden Valley Road, NY</p>
+                    </div>
+                    <div class="w-full lg:w-1/5 px-3">
+                        <p class="mb-2 lg:mb-4 lg:text-lg font-bold font-heading text-gray-800">Contacts</p>
+                        <p class="lg:text-lg text-gray-400">(+01) 234 568</p>
+                        <p class="lg:text-lg text-gray-400"><a href="/cdn-cgi/l/email-protection" class="__cf_email__"
+                                data-cfemail="5d3e3233293c3e291d3032332e29733e3230">[email&#160;protected]</a></p>
+                    </div>
+                </div>
+                <div class="flex flex-col lg:flex-row items-center lg:justify-between">
+                    <p class="text-sm text-gray-400">&copy; 2021. All rights reserved. Designed by <a
+                            class="text-blue-400" href="https://alithemes.com" target="_blank">Alithemes.com</a></p>
+                    <div class="order-first lg:order-last -mx-2 mb-4 lg:mb-0">
+                        <a class="inline-block px-2" href="#">
+                            <img src="assets/imgs/icons/facebook-blue.svg" alt="" />
+                        </a>
+                        <a class="inline-block px-2" href="#">
+                            <img src="assets/imgs/icons/twitter-blue.svg" alt="" />
+                        </a>
+                        <a class="inline-block px-2" href="#">
+                            <img src="assets/imgs/icons/instagram-blue.svg" alt="" />
+                        </a>
+                    </div>
+                </div>
+            </div> -->
+            
+        </section>
     </div>
+    <!-- End .main -->
     <AppConfig simple />
 </template>
 
-<!-- <style scoped>
+<style scoped>
 #hero {
     background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), radial-gradient(77.36% 256.97% at 77.36% 57.52%, #eeefaf 0%, #c3e3fa 100%);
     height: 700px;
@@ -454,4 +498,4 @@ const logoUrl = computed(() => {
         max-width: 100%;
     }
 }
-</style> -->
+</style>

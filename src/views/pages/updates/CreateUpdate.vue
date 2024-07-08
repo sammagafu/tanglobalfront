@@ -165,14 +165,7 @@ const deleteProduct = () => {
         });
 };
 
-const createId = () => {
-    let id = '';
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 5; i++) {
-        id += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return id;
-};
+
 
 const exportCSV = () => {
     dt.value.exportCSV();
@@ -201,6 +194,19 @@ const initFilters = () => {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS }
     };
 };
+
+const approveVehicle = (slug) => {
+  apiService.patch(`/update/${slug}/approve/`)
+    .then(response => {
+      console.log('Vehicle approved successfully:', response.data);
+      // Optionally emit an event or perform any other action upon success
+    })
+    .catch(error => {
+      console.error('Error approving vehicle:', error);
+      // Handle error
+    });
+};
+
 </script>
 
 
@@ -248,9 +254,10 @@ const initFilters = () => {
                                         <div class="flex flex-column md:align-items-end gap-5">
                                             <!-- <span class="text-xl font-semibold text-900">Carrying Capacity{{ item.capacity }} Tons</span> -->
                                             <div class="flex flex-row-reverse md:flex-row gap-2">
-                                                <Button icon="pi pi-search" outlined></Button>
-                                                <Button icon="pi pi-shopping-cart" label="Approve Update"
-                                                    class="flex-auto md:flex-initial white-space-nowrap"></Button>
+                                                <router-link :to="{name:'update-details',params : {slug:item.slug}}"> <Button icon="pi pi-search" outlined></Button></router-link>
+                                                <div class="" v-if="item.is_approved !== true">
+                                                <Button icon="pi pi-check" label="Approve" class="flex-auto md:flex-initial white-space-nowrap" @click="approveVehicle(item.slug)"></Button>
+                                            </div>
                                             </div>
                                         </div>
                                     </div>

@@ -73,8 +73,10 @@ const getCargoType = () => {
     })
 }
 
+
+//TODO:: work on category name
 const createCateogyname = () => {
-    apiService.get('cargo/type').then(response => {
+    apiService.post('cargo/type').then(response => {
         cargotype.value = response.data
         console.log(response);
     }).catch(error => {

@@ -277,10 +277,10 @@ const initFilters = () => {
                                         <div class="flex flex-column md:align-items-end gap-5">
                                             <!-- <span class="text-xl font-semibold text-900">Carrying Capacity{{ item.capacity }} Tons</span> -->
                                             <div class="flex flex-row-reverse md:flex-row gap-2">
-                                                <Button icon="pi pi-search" outlined></Button>
-                                                <Button icon="pi pi-shopping-cart" label="Buy Now"
+                                                <router-link :to="{name:'fleet-detail',params : {fleetnumber:item.id}}"><Button icon="pi pi-search" outlined></Button></router-link>
+                                                <!-- <Button icon="pi pi-shopping-cart" label="Buy Now"
                                                     :disabled="item.inventoryStatus === 'OUTOFSTOCK'"
-                                                    class="flex-auto md:flex-initial white-space-nowrap"></Button>
+                                                    class="flex-auto md:flex-initial white-space-nowrap"></Button> -->
                                             </div>
                                         </div>
                                     </div>

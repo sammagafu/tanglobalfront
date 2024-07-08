@@ -7,7 +7,7 @@ const authStore = useAuthStore();
 const fleetCompany = ref([
     {
         label: 'Home',
-        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
+        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/dashboard' }]
     },
     {
         label: 'Cargo',
@@ -33,27 +33,14 @@ const fleetCompany = ref([
                 to: '/fleet'
             },
         ]
-    },
-    {
-        label: 'Updates',
-        icon: 'pi pi-fw pi-briefcase',
-        // to: '/cargo',
-        items: [
-            {
-                label: 'My Updates',
-                icon: 'pi pi-bell',
-                to: '/updates/mine'
-            },
-            
-        ]
-    },
+    }
 
 ]);
 
 const individualModel = ref([
     {
         label: 'Home',
-        items: [{ label: 'My Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
+        items: [{ label: 'My Dashboard', icon: 'pi pi-fw pi-home', to: '/dashboard' }]
     },
 
     {
@@ -75,7 +62,7 @@ const individualModel = ref([
 const adminMenu = ref([
     {
         label : 'Admin Home',
-        items : [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
+        items : [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/dashboard' }]
     },
     {
         label: 'User Management',
@@ -159,7 +146,7 @@ const adminMenu = ref([
 const cargoCompany = ref([
     {
         label: 'Home',
-        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
+        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/dashboard' }]
     },
 
     {
@@ -175,20 +162,6 @@ const cargoCompany = ref([
             
         ]
     },
-    {
-        label: 'My Updates',
-        icon: 'pi pi-fw pi-briefcase',
-        to: '/cargo',
-        items: [
-            {
-                label: 'My Cargos',
-                icon: 'pi pi-fw pi-box',
-                to: '/cargo/create'
-            },
-            
-        ]
-    },
-
 ]);
 
 

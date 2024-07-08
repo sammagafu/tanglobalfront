@@ -2,7 +2,7 @@
     <div class="grid">
         <div class="col-12">
             <div class="card">
-                <Toolbar class="mb-4">
+                <!-- <Toolbar class="mb-4">
                     <template v-slot:start>
                         <div class="my-2">
                             <Button label="New" icon="pi pi-plus" class="mr-2" severity="success" @click="openNew" />
@@ -16,7 +16,7 @@
                             chooseLabel="Import" class="mr-2 inline-block" />
                         <Button label="Export" icon="pi pi-upload" severity="help" @click="exportCSV($event)" />
                     </template>
-                </Toolbar>
+                </Toolbar> -->
 
                 <DataTable ref="dt" :value="users" paginator :rows="10">
 
@@ -34,11 +34,10 @@
                     <Column field="email" header="Email" :sortable="true" headerStyle="width:15%; min-width:10rem;">
                     </Column>
 
-                    <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
                     <Column field="is_active" header="Is active" :sortable="true" headerStyle="width:15%; min-width:10rem;">
-                        <!-- <Tag :value="apiData ? 'Primary' : ''" :severity="apiData ? 'success' : 'danger'">
-                                {{ is_active ? 'active' : 'not active' }}
-                         </Tag> -->
+                        <template #body="slotProps">
+                         <Tag :severity="slotProps.data.is_active ? 'success':'danger'">{{ slotProps.data.is_active ? 'Active' : 'Locked' }}</Tag>
+                         </template>
                     </Column>
 
                     <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
@@ -56,8 +55,8 @@
 
                     <Column headerStyle="min-width:10rem;" header="Actions">
                         <template #body="slotProps">
-                            <Button icon="pi pi-pencil" class="mr-2" severity="success" rounded
-                                @click="editProduct(slotProps.data)" />
+                            <Button icon="pi pi-lock" class="mr-2" severity="danger" rounded
+                                @click="lockUser(slotProps.data.id)" />
                             <Button icon="pi pi-trash" class="mt-2" severity="warning" rounded
                                 @click="confirmDeleteProduct(slotProps.data)" />
                         </template>
@@ -82,31 +81,25 @@ const getUsers = () => {
         console.log(error);
     })
 }
+const lockUser = (id) =>{
+    apiService.patch(`/company/${id}/approve/`)
+    .then(response => {
+      console.log('Vehicle approved successfully:', response.data);
+      // Optionally emit an event or perform any other action upon success
+    })
+    .catch(error => {
+      console.error('Error approving vehicle:', error);
+      // Handle error
+    });
+    
+};
+
+// const approveVehicle = (slug) => {
+//   <int:pk>/approve/'
+// };
+
 onBeforeMount(() => {
     getUsers();
 });
 </script>
 
-<!-- <template>
-    <div className="card">
-        <h5>Empty Page</h5>
-        <p>Use this page to start from scratch and place your custom content.</p>
-    </div>
-</template>
-
-<script setup>
-import { ref,onMounted } from 'vue';
-import { useAuthStore } from '@/store/authStore';
-import apiService from '@/services/apiService'; // Import your API service
-const users = ref({})
-const getUsers =  ()=> {
-    apiService.get('auth/users/').then(response =>{
-        users.value = response.data
-    }).catch(error =>{
-        console.log(error);
-    });
-}
-onMounted(()=>{
-    getUsers();
-})
-</script> -->

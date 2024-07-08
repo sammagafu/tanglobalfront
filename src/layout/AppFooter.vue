@@ -5,15 +5,15 @@ import { computed } from 'vue';
 const { layoutConfig } = useLayout();
 
 const logoUrl = computed(() => {
-    return `/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
+    return '@/assets/branding/png.png';
 });
 </script>
 
 <template>
     <div class="layout-footer text-center">
-        <!-- <img :src="logoUrl" alt="Logo" height="20" class="mr-2" />
-        by --> &copy; TanGlobal
-        <span class="font-medium ml-2">Powered by Neotelabs</span>
+        <span class="font-medium mr-4">&copy; TanGlobal</span>
+        <img src="@/assets/branding/png.png" alt="Logo" height="32" class="mr-2" />
+        <span class="font-medium ml-2">Powered by Power and Networks Back-up LTD</span>
     </div>
 </template>
 <style lang="scss" scoped></style>

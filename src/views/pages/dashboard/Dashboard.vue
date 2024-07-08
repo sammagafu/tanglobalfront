@@ -1,7 +1,7 @@
 <template v-if="authStore.user">
     <h2>Welcome {{authStore.user.full_name}}</h2>
     <template v-if="authStore.user.is_superuser && authStore.user.is_staff">
-        <AdminDashboard />
+        <AdminDashboard :userData="users" :comapnyData="company" :fleetData="fleetData" :updateData="update" :cargoData="cargo" />
     </template>
     <template v-else-if="authStore.user.is_individual">
         <CargoDashboard />
@@ -10,7 +10,7 @@
         <CargoDashboard />
     </template>
     <template v-else-if="authStore.user.is_company && authStore.user.company_details.company_type === 'Fleet Company'">
-        <FleetDashboard />
+        <FleetDashboard :fleetData="fleetData" :updateData="update" :cargoData="cargo"/>
     </template>
 </template>
 
@@ -18,9 +18,75 @@
 import AdminDashboard from '@/components/dashboard/AdminDashboard.vue';
 import CargoDashboard from '@/components/dashboard/CargoDashboard.vue';
 import FleetDashboard from '@/components/dashboard/FleetDashboard.vue';
-import { ref, computed } from 'vue';
-import { useAuthStore } from '@/store/authStore'; // Import your auth store
+import apiService from '@/services/apiService'
+import { ref, computed,onBeforeMount } from 'vue';
 
+import { useAuthStore } from '@/store/authStore'; // Import your auth store
 const authStore = useAuthStore();
+const users  = ref ([])
+const company  = ref ([])
+const fleetData  = ref ([])
+const update  = ref ([])
+const cargo  = ref ([])
+
+
+const getUsers = () => {
+    apiService.get('auth/users/').then(response => {
+        users.value = response.data
+    }).catch(error => {
+        console.log(error);
+    })
+};
+
+const getcompanies = () => {
+    apiService.get('company').then(response => {
+        company.value = response.data
+        console.log(response);
+    }).catch(error => {
+        console.log(error);
+    })
+};
+
+const getFleet = () => {
+    apiService.get('fleet/')
+        .then(response => {
+            fleetData.value = response.data;
+        })
+        .catch(error => {
+            console.log(error);
+        });
+};
+
+const getUpdates = () => {
+    apiService.get('update/')
+        .then(response => {
+            update.value = response.data;
+            console.log(update.value);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+};
+
+// method to get all categories
+const getCategories = function () {
+    apiService.get('cargo/')
+        .then(async (response) => {
+            console.log(response.data);
+            cargo.value = await response.data;
+        })
+        .catch(error => {
+            console.log(error);
+        });
+};
+
+
+onBeforeMount(()=>{
+    getUsers();
+    getcompanies();
+    getFleet();
+    getUpdates();
+    getCategories();
+});
 
 </script>

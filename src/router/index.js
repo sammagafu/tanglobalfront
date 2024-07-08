@@ -10,7 +10,7 @@ const router = createRouter({
             component: AppLayout,
             children: [
                 {
-                    path: '/',
+                    path: '/dashboard',
                     name: 'dashboard',
                     component: () => import('@/views/pages/dashboard/Dashboard.vue'),
                     meta: {
@@ -151,11 +151,19 @@ const router = createRouter({
             path:'/cargo',
             name:'cargo-index',
             component: AppLayout,
+            meta: {
+                requiresAuth: true // Add meta field for authentication guard
+              },
             children :[
                 {
                     path: '',
                     name: 'cargo-home',
                     component: () => import('@/views/pages/cargo/CreateCargo.vue')
+                },
+                {
+                    path: ':uuid',
+                    name: 'cargo-details',
+                    component: () => import('@/views/pages/cargo/CargoDetails.vue')
                 },
                 {
                     path: 'create',
@@ -168,6 +176,9 @@ const router = createRouter({
             path:'/fleet',
             name:'fleet-index',
             component: AppLayout,
+            meta: {
+                requiresAuth: true // Add meta field for authentication guard
+              },
             children :[
                 {
                     path: '',
@@ -179,12 +190,20 @@ const router = createRouter({
                     name: 'fleet-create',
                     component: () => import('@/views/pages/fleet/FleetManage.vue')
                 },
+                {
+                    path: ':fleetnumber',
+                    name: 'fleet-detail',
+                    component: () => import('@/views/pages/fleet/FleetDetailView.vue')
+                },
             ]
         },
         {
             path:'/users',
             name:'users-index',
             component: AppLayout,
+            meta: {
+                requiresAuth: true // Add meta field for authentication guard
+              },
             children :[
                 {
                     path: '',
@@ -215,6 +234,9 @@ const router = createRouter({
             path:'/profile',
             name:'my-profile',
             component: AppLayout,
+            meta: {
+                requiresAuth: true // Add meta field for authentication guard
+              },
             children :[
                 {
                     path: '',
@@ -231,6 +253,9 @@ const router = createRouter({
             path:'/updates/',
             name:'updates',
             component: AppLayout,
+            meta: {
+                requiresAuth: true // Add meta field for authentication guard
+              },
             children :[
                 {
                     path: 'manage',
@@ -267,7 +292,7 @@ const router = createRouter({
             ]
         },
         {
-            path: '/landing',
+            path: '',
             name: 'landing',
             component: () => import('@/views/pages/Landing.vue')
         },

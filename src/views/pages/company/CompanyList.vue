@@ -3,7 +3,7 @@
     <div class="grid">
         <div class="col-12">
             <div class="card">
-                <Toolbar class="mb-4">
+                <!-- <Toolbar class="mb-4">
                     <template v-slot:start>
                         <div class="my-2">
                             <Button label="New" icon="pi pi-plus" class="mr-2" severity="success" @click="openNew" />
@@ -17,7 +17,7 @@
                             chooseLabel="Import" class="mr-2 inline-block" />
                         <Button label="Export" icon="pi pi-upload" severity="help" @click="exportCSV($event)" />
                     </template>
-                </Toolbar>
+                </Toolbar> -->
 
                 <DataTable ref="dt" :value="company" paginator :rows="10">
                     <template #header>
@@ -39,12 +39,21 @@
                     <Column field="comapnyWebsite" header="Website" :sortable="true" headerStyle="width:20%; min-width:10rem;">
                     </Column>
                     <Column field="is_approved" header="Apporoved" :sortable="true" headerStyle="width:20%; min-width:10rem;">
+                        <template #body="slotProps">
+                         <Tag :severity="slotProps.data.is_approved ? 'success':'danger'">{{ slotProps.data.is_approved ? 'Active' : 'Locked' }}</Tag>
+                         </template>
                     </Column>
+
+                    <!-- <Column field="is_active" header="Is active" :sortable="true" headerStyle="width:15%; min-width:10rem;">
+                        <template #body="slotProps">
+                         <Tag :severity="slotProps.data.is_active ? 'success':'danger'">{{ slotProps.data.is_active ? 'Active' : 'Locked' }}</Tag>
+                         </template>
+                    </Column> -->
 
                     <Column headerStyle="min-width:10rem;" header="Actions">
                         <template #body="slotProps">
-                            <Button icon="pi pi-pencil" class="mr-2" severity="success" rounded
-                                @click="editProduct(slotProps.data)" />
+                            <Button icon="pi pi-lock" class="mr-2" severity="success" rounded
+                                @click="lockorUnlockCompany(slotProps.data.id)" />
                             <Button icon="pi pi-trash" class="mt-2" severity="warning" rounded
                                 @click="confirmDeleteProduct(slotProps.data)" />
                         </template>
@@ -61,6 +70,7 @@ import { ref, onBeforeMount } from 'vue';
 import apiService from '@/services/apiService'
 
 const company = ref([])
+
 const getCargoType = () => {
     apiService.get('company').then(response => {
         company.value = response.data
@@ -69,6 +79,17 @@ const getCargoType = () => {
         console.log(error);
     })
 }
+
+const lockorUnlockCompany = (id) => {
+    apiService.patch(`/company/${id}/approve-company/`)
+    .then(response => {
+      console.log('Vehicle approved successfully:', response.data);
+    })
+    .catch(error => {
+      console.error('Error approving vehicle:', error);
+    });   
+};
+
 onBeforeMount(() => {
     getCargoType();
 });

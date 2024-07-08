@@ -276,10 +276,8 @@ const initFilters = () => {
                                         <div class="flex flex-column md:align-items-end gap-5">
                                             <!-- <span class="text-xl font-semibold text-900">Carrying Capacity{{ item.capacity }} Tons</span> -->
                                             <div class="flex flex-row-reverse md:flex-row gap-2">
-                                                <Button icon="pi pi-search" outlined></Button>
-                                                <Button icon="pi pi-shopping-cart" label="Bid to transport"
-                                                    :disabled="item.inventoryStatus === 'OUTOFSTOCK'"
-                                                    class="flex-auto md:flex-initial white-space-nowrap"></Button>
+                                                <router-link :to="{name:'cargo-details',params : {uuid:item.uuid}}"><Button icon="pi pi-search" outlined></Button></router-link>
+                                                <!-- <Button icon="pi pi-check" label="Approve " class="flex-auto md:flex-initial white-space-nowrap"></Button> -->
                                             </div>
                                         </div>
                                     </div>
@@ -353,7 +351,7 @@ const initFilters = () => {
 
                         <div class="field">
                             <label for="description">Special Handling Instruction</label>
-                            <Textarea id="description" v-model="handlingInstruction" name="handlingInstruction"
+                            <Textarea id="description" v-model="handlingInstruction" name="special_handling_instructions"
                                 required="true" rows="3" cols="20" />
                         </div>
 
