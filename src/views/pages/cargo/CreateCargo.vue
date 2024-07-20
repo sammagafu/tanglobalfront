@@ -1,439 +1,391 @@
+<template>
+    <div class="m-4">
+        <Toolbar class="mb-4">
+            <template v-slot:start>
+                <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
+                <Button label="Delete" icon="pi pi-trash" class="p-button-danger" @click="deleteSelectedCargos" :disabled="!selectedProducts.length" />
+            </template>
+            <template v-slot:end>
+                <FileUpload mode="basic" accept="*" :maxFileSize="5000000" label="Import" chooseLabel="Import" class="mr-2 inline-block" @upload="onDocumentUpload" />
+                <Button label="Export" icon="pi pi-upload" severity="help" @click="exportCSV($event)" />
+            </template>
+        </Toolbar>
+
+        <DataTable ref="dt" :value="cargos" scrollable paginator :rows="10" v-model:selection="selectedProducts">
+            <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
+            <Column field="cargo" header="Cargo Name" :sortable="true" headerStyle="width:15%; min-width:10rem;"></Column>
+            <Column field="weight" header="Weight" :sortable="true" headerStyle="width:10%; min-width:10rem;"></Column>
+            <Column field="weight_unit" header="Weight Unit" :sortable="true" headerStyle="width:10%; min-width:10rem;"></Column>
+            <Column field="length" header="Length" :sortable="true" headerStyle="width:10%; min-width:10rem;"></Column>
+            <Column field="width" header="Width" :sortable="true" headerStyle="width:10%; min-width:10rem;"></Column>
+            <Column field="height" header="Height" :sortable="true" headerStyle="width:10%; min-width:10rem;"></Column>
+            <Column field="origin" header="Origin" :sortable="true" headerStyle="width:15%; min-width:10rem;"></Column>
+            <Column field="destination" header="Destination" :sortable="true" headerStyle="width:15%; min-width:10rem;"></Column>
+            <Column field="receiver_name" header="Receiver Name" :sortable="true" headerStyle="width:15%; min-width:10rem;"></Column>
+            <Column field="receiver_contact" header="Receiver Contact" :sortable="true" headerStyle="width:15%; min-width:10rem;"></Column>
+            <Column field="status" header="Status" :sortable="true" headerStyle="width:10%; min-width:10rem;"></Column>
+            <Column field="actions" header="Actions" headerStyle="width:10%; min-width:10rem;">
+                <template #body="slotProps">
+                    <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="editCargo(slotProps.data)" />
+                    <Button icon="pi pi-trash" class="p-button-rounded p-button-danger" @click="deleteCargo(slotProps.data)" />
+                </template>
+            </Column>
+        </DataTable>
+
+        <Dialog :header="dialogHeader" v-model:visible="cargoDialog" :modal="true" :style="{ width: '60vw' }" :closable="false" @hide="hideDialog">
+            <template #footer>
+                <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
+                <Button label="Save" icon="pi pi-check" class="p-button-text" @click="saveCargo" />
+            </template>
+
+            <form @submit.prevent="saveCargo">
+                <div class="p-fluid">
+                    <div class="py-2">
+                        <label for="cargo">Cargo Name</label>
+                        <InputText id="cargo" v-model="cargo.cargo" required :class="{'p-invalid': submitted && !cargo.cargo}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500" />
+                        <small v-if="submitted && !cargo.cargo" class="p-error">Cargo name is required.</small>
+                    </div>
+                    <div class="py-2">
+                        <label for="weight">Weight</label>
+                        <input type="number" name="weight" id="weight" v-model="cargo.weight" required :class="{'p-invalid': submitted && !cargo.weight}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500">
+                        <small v-if="submitted && !cargo.weight" class="p-error">Weight is required.</small>
+                    </div>
+                    <div class="py-2">
+                        <label for="weight_unit">Weight Unit</label>
+                        <Dropdown id="weight_unit" v-model="cargo.weight_unit" :options="weightUnits" optionLabel="label" optionValue="value" required :class="{'p-invalid': submitted && !cargo.weight_unit}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"/>
+                        <small v-if="submitted && !cargo.weight_unit" class="p-error">Weight unit is required.</small>
+                    </div>
+                    <div class="py-2">
+                        <label for="length">Length</label>
+                        <input type="number" name="length" id="length" v-model="cargo.length" required :class="{'p-invalid': submitted && !cargo.length}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500">
+                        <small v-if="submitted && !cargo.length" class="p-error">Length is required.</small>
+                    </div>
+                    <div class="py-2">
+                        <label for="width">Width</label>
+                        <input type="number" name="width" id="width" v-model="cargo.width" required :class="{'p-invalid': submitted && !cargo.width}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500">
+                        <small v-if="submitted && !cargo.width" class="p-error">Width is required.</small>
+                    </div>
+                    <div class="py-2">
+                        <label for="height">Height</label>
+                        <input type="number" name="height" id="height" v-model="cargo.height" required :class="{'p-invalid': submitted && !cargo.height}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500">
+                        <small v-if="submitted && !cargo.height" class="p-error">Height is required.</small>
+                    </div>
+                    <div class="py-2">
+                        <label for="cargo_type">Cargo Type</label>
+                        <Dropdown id="cargo_type" v-model="cargo.cargo_type" :options="cargoTypeChoices" optionLabel="label" optionValue="value" required :class="{'p-invalid': submitted && !cargo.cargo_type}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"/>
+                        <small v-if="submitted && !cargo.cargo_type" class="p-error">Cargo type is required.</small>
+                    </div>
+                    <div class="py-2">
+                        <Checkbox inputId="fragile" v-model="cargo.fragile" />
+                        <label for="fragile">Fragile</label>
+                    </div>
+                    <div class="py-2">
+                        <Checkbox inputId="temperature_sensitive" v-model="cargo.temperature_sensitive" />
+                        <label for="temperature_sensitive">Temperature Sensitive</label>
+                    </div>
+                    <div class="py-2">
+                        <label for="special_handling_instructions">Special Handling Instructions</label>
+                        <Textarea id="special_handling_instructions" v-model="cargo.special_handling_instructions" rows="3" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"/>
+                    </div>
+                    <div class="py-2">
+                        <label for="origin">Origin</label>
+                        <InputText id="origin" v-model="cargo.origin" required :class="{'p-invalid': submitted && !cargo.origin}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"/>
+                        <small v-if="submitted && !cargo.origin" class="p-error">Origin is required.</small>
+                    </div>
+                    <div class="py-2">
+                        <label for="destination">Destination</label>
+                        <InputText id="destination" v-model="cargo.destination" required :class="{'p-invalid': submitted && !cargo.destination}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"/>
+                        <small v-if="submitted && !cargo.destination" class="p-error">Destination is required.</small>
+                    </div>
+                    <div class="py-2">
+                        <label for="receiver_name">Receiver Name</label>
+                        <InputText id="receiver_name" v-model="cargo.receiver_name" required :class="{'p-invalid': submitted && !cargo.receiver_name}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"/>
+                        <small v-if="submitted && !cargo.receiver_name" class="p-error">Receiver name is required.</small>
+                    </div>
+                    <div class="py-2">
+                        <label for="receiver_contact">Receiver Contact</label>
+                        <InputText id="receiver_contact" v-model="cargo.receiver_contact" required :class="{'p-invalid': submitted && !cargo.receiver_contact}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"/>
+                        <small v-if="submitted && !cargo.receiver_contact" class="p-error">Receiver contact is required.</small>
+                    </div>
+                    <div class="py-2">
+                        <label for="cargo_documents">Cargo Documents</label>
+                        <input type="file" id="documents" multiple @change="handleFileUpload('documents', $event)" />
+                        <ul>
+                            <li v-for="(document, index) in cargo.cargo_documents" :key="index">
+                                {{ document.file.name }}
+                                <Button icon="pi pi-times" class="p-button-rounded p-button-danger p-button-text" @click="removeDocument(index)" />
+                            </li>
+                        </ul>
+                        <small v-if="documentError" class="p-error">{{ documentError }}</small>
+                    </div>
+                    <div class="py-2">
+                        <label for="images">Images</label>
+                        <input type="file" id="images" multiple @change="handleFileUpload('images', $event)" />
+                        <ul>
+                            <li v-for="(image, index) in cargo.images" :key="index">
+                                <img :src="image.file ? URL.createObjectURL(image.file) : image.image" alt="Cargo Image" width="100" />
+                                <Button icon="pi pi-times" class="p-button-rounded p-button-danger p-button-text" @click="removeImage(index)" />
+                            </li>
+                        </ul>
+                        <small v-if="imageError" class="p-error">{{ imageError }}</small>
+                    </div>
+                </div>
+            </form>
+        </Dialog>
+    </div>
+</template>
+
 <script setup>
-import { FilterMatchMode } from 'primevue/api';
-import { ref, onMounted, onBeforeMount } from 'vue';
+import { ref, computed, onBeforeMount } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import { useAuthStore } from '@/store/authStore'; // Import your auth store
-import apiService from '@/services/apiService'; // Import your API service
-const toast = useToast();
+import apiService from '@/services/apiService';
 
-const products = ref(null);
-const productDialog = ref(false);
-const deleteProductDialog = ref(false);
-const deleteProductsDialog = ref(false);
-const product = ref({});
-const selectedProducts = ref(null);
-const dt = ref(null);
-const filters = ref({});
+const cargos = ref([]);
+const cargoTypes = ref([]);
+const cargoDialog = ref(false);
 const submitted = ref(false);
-const fomu = ref(null)
-const cargotype = ref({})
-const companyCargo = ref([])
-
-// form fields
-// Define ref variables for form fields
-// Define reactive variables for form fields
-const cargoname = ref('');
-const weight = ref('');
-const dimensions = ref('');
-const selectedCargoType = ref('');
-const flagile = ref(false);
-const temperatureSensitive = ref(false);
-const handlingInstruction = ref('');
-const origin = ref('');
-const destination = ref('');
-const receiverName = ref('');
-const receiverContact = ref('');
-const cargoDocuments = ref([{ documentName: '', documentFile: null }]);
-
-
-// Method to add image
-const addCargoDocument = () => {
-    cargoDocuments.value.push({ documentName: '', documentFile: null });
-    console.log(cargoDocuments.value);
-};
-
-
-// Method to remove cargo
-const removeCargoDocument = (index) => {
-    cargoDocuments.value.splice(index, 1);
-};
-
-
-
-
-const saveCargo = async () => {
-    try {
-        const formData = new FormData(fomu.value);
-        // formData.append('cargoname', cargoname.value);
-        // formData.append('weight', weight.value);
-        // formData.append('dimensions', dimensions.value);
-        // formData.append('selectedCargoType', selectedCargoType.value);
-        // formData.append('flagile', flagile.value);
-        // formData.append('temperatureSensitive', temperatureSensitive.value);
-        // formData.append('handlingInstruction', handlingInstruction.value);
-        // formData.append('origin', origin.value);
-        // formData.append('destination', destination.value);
-        // formData.append('receiver_name', receiverName.value);
-        // formData.append('receiver_contact', receiverContact.value);
-        // formData.append('cargoDocumentName', cargoDocumentName.value);
-        // formData.append('cargoDocument', cargoDocument.value);
-
-        cargoDocuments.value.forEach((document, index) => {
-            formData.append(`cargo_documents[${index}][name]`, document.name);
-            formData.append(`cargo_documents[${index}][file]`, document.file);
-        });
-
-        const response = await apiService.post('cargo/', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        if (response.status === 200||201) {
-            toast.add({ severity: 'success', summary: 'Success', detail: 'Cargo saved successfully' });
-            resetForm();
-            hideDialog();
-        } else {
-            console.error('Failed to save cargo');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-    }
-};
-
-const resetForm = () => {
-  cargoname.value = '';
-  weight.value = '';
-  dimensions.value = '';
-  selectedCargoType.value = '';
-  flagile.value = false;
-  temperatureSensitive.value = false;
-  handlingInstruction.value = '';
-  origin.value = '';
-  destination.value = '';
-  receiverName.value = '';
-  receiverContact.value = '';
-  cargoDocuments.value = [{ documentName: '', documentFile: null }];
-};
-
-
-// method to get all categories
-const getCategories = function () {
-    apiService.get('cargo/type')
-        .then(async (response) => {
-            console.log(response.data);
-            cargotype.value = await response.data;
-        })
-        .catch(error => {
-            console.log(error);
-        });
-};
-
-const getCompanyCargo = function () {
-    apiService.get('cargo/')
-        .then(async (response) => {
-            console.log(response.data);
-            companyCargo.value = await response.data;
-        })
-        .catch(error => {
-            console.log(error);
-        });
-};
-
-
-
-onBeforeMount(() => {
-    initFilters();
-    getCategories();
-    getCompanyCargo();
-
+const cargo = ref({
+    cargo: '',
+    weight: null,
+    weight_unit: 'kg',
+    length: null,
+    width: null,
+    height: null,
+    cargo_type: null,
+    fragile: false,
+    temperature_sensitive: false,
+    special_handling_instructions: '',
+    origin: '',
+    destination: '',
+    receiver_name: '',
+    receiver_contact: '',
+    cargo_documents: [],
+    images: []
 });
+const selectedCargo = ref(null);
+const selectedProducts = ref([]);
+const toast = useToast();
+const documentError = ref('');
+const imageError = ref('');
 
-const openNew = () => {
-    product.value = {};
-    submitted.value = false;
-    productDialog.value = true;
+const WEIGHT_UNIT_CHOICES = [
+    { label: 'Kilograms', value: 'kg' },
+    { label: 'Liters', value: 'ltr' },
+];
+
+const STATUS_CHOICES = [
+    { label: 'Pending', value: 'pending' },
+    { label: 'In Transit', value: 'in_transit' },
+    { label: 'Delivered', value: 'delivered' },
+    { label: 'Delayed', value: 'delayed' },
+    { label: 'Cancelled', value: 'cancelled' },
+];
+
+const cargoTypeChoices = computed(() => cargoTypes.value.map(type => ({
+    label: type.name,
+    value: type.id
+})));
+
+const weightUnits = computed(() => WEIGHT_UNIT_CHOICES);
+
+const statusOptions = computed(() => STATUS_CHOICES);
+
+const getCargoTypes = () => {
+    apiService.get('cargo/type/cargo/')
+        .then(response => {
+            cargoTypes.value = response.data;
+        })
+        .catch(error => {
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to load cargo types', life: 3000 });
+        });
 };
 
-const hideDialog = () => {
-    productDialog.value = false;
-    submitted.value = false;
+const getCargos = () => {
+    apiService.get('cargo/')
+        .then(response => {
+            cargos.value = response.data;
+        })
+        .catch(error => {
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to load cargos', life: 3000 });
+        });
 };
 
+const saveCargo = () => {
+    submitted.value = true;
 
-
-const editProduct = (editProduct) => {
-    cargoname.value = editProduct.cargo;
-    weight.value = editProduct.weight;
-    dimensions.value = editProduct.dimensions;
-    // selectedCargoType.value = editProduct.cargo_type.id.toString(); // Assuming cargo_type.id is a string
-    flagile.value = editProduct.fragile.toString(); // Assuming fragile is a string
-    temperatureSensitive.value = editProduct.temperature_sensitive.toString(); // Assuming temperature_sensitive is a string
-    handlingInstruction.value = editProduct.handling_instruction;
-    origin.value = editProduct.origin;
-    destination.value = editProduct.destination;
-    receiverName.value = editProduct.receiver_name;
-    receiverContact.value = editProduct.receiver_contact;
-    cargoDocuments.value = editProduct.cargo_document_name;
-    productDialog.value = true;
-};
-
-const confirmDeleteProduct = (editProduct) => {
-    product.value = editProduct;
-    deleteProductDialog.value = true;
-};
-
-const deleteProduct = () => {
-    products.value = products.value.filter((val) => val.id !== product.value.id);
-    deleteProductDialog.value = false;
-    product.value = {};
-    toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
-};
-
-const findIndexById = (id) => {
-    let index = -1;
-    for (let i = 0; i < products.value.length; i++) {
-        if (products.value[i].id === id) {
-            index = i;
-            break;
-        }
+    if (!cargo.value.cargo || !cargo.value.weight || !cargo.value.weight_unit || !cargo.value.length || !cargo.value.width || !cargo.value.height || !cargo.value.origin || !cargo.value.destination || !cargo.value.receiver_name || !cargo.value.receiver_contact || !cargo.value.cargo_type || !cargo.value.status) {
+        return;
     }
-    return index;
-};
 
-const createId = () => {
-    let id = '';
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 5; i++) {
-        id += chars.charAt(Math.floor(Math.random() * chars.length));
+    const formData = new FormData();
+    formData.append('cargo', cargo.value.cargo);
+    formData.append('weight', cargo.value.weight);
+    formData.append('weight_unit', cargo.value.weight_unit);
+    formData.append('length', cargo.value.length);
+    formData.append('width', cargo.value.width);
+    formData.append('height', cargo.value.height);
+    formData.append('cargo_type', cargo.value.cargo_type);
+    formData.append('fragile', cargo.value.fragile ? 'true' : 'false');
+    formData.append('temperature_sensitive', cargo.value.temperature_sensitive ? 'true' : 'false');
+    formData.append('special_handling_instructions', cargo.value.special_handling_instructions);
+    formData.append('origin', cargo.value.origin);
+    formData.append('destination', cargo.value.destination);
+    formData.append('receiver_name', cargo.value.receiver_name);
+    formData.append('receiver_contact', cargo.value.receiver_contact);
+    formData.append('status', cargo.value.status);
+
+    cargo.value.cargo_documents.forEach((doc) => {
+        formData.append('documents', doc.file);
+    });
+
+    cargo.value.images.forEach((img) => {
+        formData.append('images', img.file);
+    });
+
+    if (selectedCargo.value) {
+        apiService.put(`cargo/${selectedCargo.value.uuid}/`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+            .then(response => {
+                const index = cargos.value.findIndex(c => c.uuid === selectedCargo.value.uuid);
+                cargos.value[index] = response.data;
+                cargoDialog.value = false;
+                resetForm();
+                toast.add({ severity: 'success', summary: 'Success', detail: 'Cargo updated', life: 3000 });
+            })
+            .catch(error => {
+                toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to update cargo', life: 3000 });
+            });
+    } else {
+        apiService.post('cargo/', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+            .then(response => {
+                cargos.value.push(response.data);
+                cargoDialog.value = false;
+                resetForm();
+                toast.add({ severity: 'success', summary: 'Success', detail: 'Cargo created', life: 3000 });
+            })
+            .catch(error => {
+                toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to create cargo', life: 3000 });
+            });
     }
-    return id;
 };
 
-const exportCSV = () => {
-    dt.value.exportCSV();
+const editCargo = (cargo) => {
+    selectedCargo.value = cargo;
+    cargo.value = { ...cargo };
+    cargoDialog.value = true;
+};
+
+const confirmDeleteCargo = (cargo) => {
+    confirmDialog({
+        message: 'Are you sure you want to delete this cargo?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => deleteCargo(cargo),
+    });
+};
+
+const deleteCargo = (cargo) => {
+    apiService.delete(`cargo/${cargo.uuid}/`)
+        .then(() => {
+            cargos.value = cargos.value.filter(c => c.uuid !== cargo.uuid);
+            toast.add({ severity: 'success', summary: 'Success', detail: 'Cargo deleted', life: 3000 });
+        })
+        .catch(error => {
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete cargo', life: 3000 });
+        });
 };
 
 const confirmDeleteSelected = () => {
-    deleteProductsDialog.value = true;
-};
-const deleteSelectedProducts = () => {
-    products.value = products.value.filter((val) => !selectedProducts.value.includes(val));
-    deleteProductsDialog.value = false;
-    selectedProducts.value = null;
-    toast.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
+    confirmDialog({
+        message: 'Are you sure you want to delete the selected cargos?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        accept: deleteSelectedCargos,
+    });
 };
 
-const initFilters = () => {
-    filters.value = {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
-    };
+const deleteSelectedCargos = () => {
+    const ids = selectedProducts.value.map(product => product.uuid);
+    Promise.all(ids.map(id => apiService.delete(`cargo/${id}/`)))
+        .then(() => {
+            cargos.value = cargos.value.filter(c => !ids.includes(c.uuid));
+            selectedProducts.value = [];
+            toast.add({ severity: 'success', summary: 'Success', detail: 'Selected cargos deleted', life: 3000 });
+        })
+        .catch(error => {
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete selected cargos', life: 3000 });
+        });
 };
+
+const openNew = () => {
+    resetForm();
+    cargoDialog.value = true;
+};
+
+const hideDialog = () => {
+    cargoDialog.value = false;
+};
+
+const resetForm = () => {
+    cargo.value = {
+        cargo: '',
+        weight: null,
+        weight_unit: 'kg',
+        length: null,
+        width: null,
+        height: null,
+        cargo_type: null,
+        fragile: false,
+        temperature_sensitive: false,
+        special_handling_instructions: '',
+        origin: '',
+        destination: '',
+        receiver_name: '',
+        receiver_contact: '',
+        status: 'pending',
+        cargo_documents: [],
+        images: []
+    };
+    submitted.value = false;
+    selectedCargo.value = null;
+};
+
+const handleFileUpload = (type, event) => {
+    const files = event.target.files;
+    if (type === 'documents') {
+        cargo.value.cargo_documents.push(...Array.from(files).map(file => ({ file })));
+    } else if (type === 'images') {
+        cargo.value.images.push(...Array.from(files).map(file => ({ file })));
+    }
+};
+
+const removeDocument = (index) => {
+    cargo.value.cargo_documents.splice(index, 1);
+};
+
+const removeImage = (index) => {
+    cargo.value.images.splice(index, 1);
+};
+
+const dialogHeader = computed(() => selectedCargo.value ? 'Edit Cargo' : 'Create Cargo');
+
+onBeforeMount(() => {
+    getCargos();
+    getCargoTypes();
+});
 </script>
 
-<template>
-    <div class="grid">
-        <div class="col-12">
-            <div class="card">
-                <Toolbar class="mb-4">
-                    <template v-slot:start>
-                        <div class="my-2">
-                            <Button label="New" icon="pi pi-plus" class="mr-2" severity="success" @click="openNew" />
-                            <Button label="Delete" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected"
-                                :disabled="!selectedProducts || !selectedProducts.length" />
-                        </div>
-                    </template>
-
-                    <template v-slot:end>
-                        <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import"
-                            chooseLabel="Import" class="mr-2 inline-block" />
-                        <Button label="Export" icon="pi pi-upload" severity="help" @click="exportCSV($event)" />
-                    </template>
-                </Toolbar>
-
-                <DataView :value="companyCargo" :sortOrder="sortOrder" :sortField="sortField">
-                    <template #header>
-                        <Dropdown v-model="sortKey" :options="sortOptions" optionLabel="label"
-                            placeholder="Sort By Price" @change="onSortChange($event)" />
-                    </template>
-                    <template #list="slotProps">
-                        <div class="grid grid-nogutter">
-                            <div v-for="(item, index) in slotProps.items" :key="index" class="col-12">
-                                <div class="flex flex-column sm:flex-row sm:align-items-center p-4 gap-3"
-                                    :class="{ 'border-top-1 surface-border': index !== 0 }">
-                                
-                                    <div
-                                        class="flex flex-column md:flex-row justify-content-between md:align-items-center flex-1 gap-4">
-                                        <div
-                                            class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
-                                            <div>
-                                                <span class="font-medium text-secondary text-sm my-4">Cargo Information</span>
-                                                <div class="text-lg font-medium text-900">Cargo Name : {{ item.cargo }}</div>
-                                                <div class="font-baseline font-medium flex flex-row">From : {{ item.origin }}</div>
-                                                <div class="font-baseline font-medium flex flex-row">Flagile : {{ item.fragile }}</div>
-                                                
-                                            </div>
-                                            
-                                        </div>
-                                        <div
-                                            class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
-                                            <div>
-                                                <span class="font-medium text-secondary text-sm">&nbsp;</span>
-                                                <div class="font-baseline font-medium">Weight : {{ item.weight }} Tons</div>
-                                                <div class="font-baseline font-medium">To : {{ item.destination }}</div>
-                                                <div class="font-baseline font-medium">Temperature Senistive : {{ item.temperature_sensitive }}</div>
-                                                
-                                            </div>
-                                            
-                                        </div> 
-                                        <div class="flex flex-column md:align-items-end gap-5">
-                                            <!-- <span class="text-xl font-semibold text-900">Carrying Capacity{{ item.capacity }} Tons</span> -->
-                                            <div class="flex flex-row-reverse md:flex-row gap-2">
-                                                <router-link :to="{name:'cargo-details',params : {uuid:item.uuid}}"><Button icon="pi pi-search" outlined></Button></router-link>
-                                                <!-- <Button icon="pi pi-check" label="Approve " class="flex-auto md:flex-initial white-space-nowrap"></Button> -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                </DataView>
-
-
-                <Dialog v-model:visible="productDialog" :style="{ width: '650px' }" header="Create Cargo" :modal="true"
-                    class="p-fluid">
-                    <form @submit.prevent="saveCargo" ref="fomu">
-                        <div class="field">
-                            <label for="name">Cargo Name {{ cargoname }}</label>
-                            <InputText id="name" name="cargo" v-model="cargoname" required="true" autofocus
-                                :invalid="submitted && !cargoname" placeholder="13Tons of Coal " />
-                            <small class="p-invalid" v-if="submitted && !cargoname">Cargo name is required.</small>
-                        </div>
-                        <div class="field">
-                            <label for="name">Cargo Weight in Tons</label>
-                            <InputText id="name" name="weight" v-model="weight" required="true" autofocus
-                                :invalid="submitted && !weight" placeholder="13 " />
-                            <small class="p-invalid" v-if="submitted && !weight">Cargo weight is required.</small>
-                        </div>
-
-                        <div class="field">
-                            <label for="name">Cargo Dimensions in Metres</label>
-                            <InputText id="name" name="dimensions" v-model="dimensions" required="true" autofocus
-                                :invalid="submitted && !dimensions" placeholder="110x5x3 meters" />
-                            <small class="p-invalid" v-if="submitted && !dimensions">Name is required.</small>
-                        </div>
-
-                        <div class="field">
-                            <label for="inventoryStatus" class="mb-3">Cargo Type</label>
-                            <Dropdown id="cargoType" v-model="selectedCargoType" :options="cargotype" optionLabel="name"
-                                placeholder="Select Cargo Type" />
-                        </div>
-
-                        <div class="formgrid grid">
-                            <div class="field col">
-                                <label class="mb-3">Is the Cargo Fragile ?</label>
-                                <div class="formgrid grid">
-                                    <div class="field-radiobutton col-6">
-                                        <RadioButton id="category1" name="flagile" value="true" v-model="flagile" />
-                                        <label for="category1">Yes</label>
-                                    </div>
-                                    <div class="field-radiobutton col-6">
-                                        <RadioButton id="category2" name="flagile" value="false" v-model="flagile" />
-                                        <label for="category2">No</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="field col">
-                                <label class="mb-3">Is the Cargo Temperature Sensitve ?</label>
-                                <div class="formgrid grid">
-                                    <div class="field-radiobutton col-6">
-                                        <RadioButton id="category1" name="temperatureSensitive" value="true"
-                                            v-model="temperatureSensitive" />
-                                        <label for="category1">Yes</label>
-                                    </div>
-                                    <div class="field-radiobutton col-6">
-                                        <RadioButton id="category2" name="temperatureSensitive" value="false"
-                                            v-model="temperatureSensitive" />
-                                        <label for="category2">No</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="field">
-                            <label for="description">Special Handling Instruction</label>
-                            <Textarea id="description" v-model="handlingInstruction" name="special_handling_instructions"
-                                required="true" rows="3" cols="20" />
-                        </div>
-
-                        <div class="formgrid grid">
-                            <div class="field col">
-                                <label for="pickup">Origin / Pickup Location</label>
-                                <InputText id="pickup" name="origin" v-model="origin" :invalid="submitted && !origin"
-                                    :required="true" />
-                                <small class="p-invalid" v-if="submitted && !origin">Pickup Location is
-                                    required.</small>
-                            </div>
-                            <div class="field col">
-                                <label for="destination">Destination or Drop Point</label>
-                                <InputText id="destination" name="destination" v-model="destination" integeronly
-                                    :invalid="submitted && !destination" />
-                                <small class="p-invalid" v-if="submitted && !destination">Destination Location is
-                                    required.</small>
-
-                            </div>
-                        </div>
-
-
-                        <div class="formgrid grid">
-                            <div class="field col">
-                                <label for="receiver">Receiver's Name</label>
-                                <InputText id="receiver" v-model="receiverName" name="receiver_name"
-                                    :invalid="submitted && !receiverName" :required="true" />
-                                <small class="p-invalid" v-if="submitted && !receiverName">Receiver is required.</small>
-                            </div>
-                            <div class="field col">
-                                <label for="quantity">Receiver's Contact Address</label>
-                                <InputText id="quantity" v-model="receiverContact" name="receiver_contact" integeronly
-                                    :invalid="submitted && !receiverContact" :required="true" />
-                                <small class="p-invalid" v-if="submitted && !receiverContact">Receiver is
-                                    required.</small>
-
-                            </div>
-                        </div>
-
-                        <!-- Iterate over cargoDocuments array -->
-                        <div class="p-fluid formgrid grid" v-for="(document, index) in cargoDocuments"
-                            :key="index">
-                            <div class="field col-12 md:col-6">
-                                <!-- Bind input field to document name using v-model -->
-                                <label :for="'supportDocumentName_' + index">Document {{ index + 1 }}</label>
-                                <InputText name="document_name" :id="'supportDocumentName_' + index" type="text" v-model="document.name" />
-                            </div>
-                            <div class="field col-12 md:col-4">
-                                <label :for="'supportDocumentFile_' + index">Document {{ index + 1 }}</label>
-                                <FileUpload name="document_file" customUpload :id="'document_' + index" mode="basic" :accept="'.pdf,.jpg,.jpeg,.png,.doc,.docx'" @onSelect="addDocument($event, index)" />
-                            </div>
-                            <div class="field col-12 md:col-2">
-                                <label>&nbsp;</label>
-                                <div class="flex flex-row">
-                                    <!-- If index is greater than 0, show remove button -->
-                                    <Button v-if="index > 0" class="mr-1" severity="danger" rounded icon="pi pi-minus"
-                                        @click="removeCargoDocument(index)" />
-                                    <!-- If it's the last document or index is 0, show add button -->
-                                    <Button v-if="index === cargoDocuments.length - 1 || index === 0" class="mr-1"
-                                        severity="success" rounded icon="pi pi-plus" @click="addCargoDocument" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <Button label="Cancel" icon="pi pi-times" text="" @click="hideDialog" />
-                        <Button label="Save" icon="pi pi-check" type="submit" />
-                    </form>
-
-                </Dialog>
-
-                <Dialog v-model:visible="deleteProductDialog" :style="{ width: '450px' }" header="Confirm"
-                    :modal="true">
-                    <div class="flex align-items-center justify-content-center">
-                        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                        <span v-if="product">Are you sure you want to delete <b>{{ product.name }}</b>?</span>
-                    </div>
-                    <template #footer>
-                        <Button label="No" icon="pi pi-times" text @click="deleteProductDialog = false" />
-                        <Button label="Yes" icon="pi pi-check" text @click="deleteProduct" />
-                    </template>
-                </Dialog>
-            </div>
-        </div>
-    </div>
-</template>
+<style scoped>
+.p-error {
+    color: #f44336;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+</style>
