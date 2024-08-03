@@ -1,7 +1,7 @@
 <template>
     
-    <div class="grid">
-        <div class="col-12 lg:col-6 xl:col-3">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="col-span-1">
             <div class="card mb-0 bg-yellow-300">
                 <div class="flex justify-content-between mb-3">
                     <div>
@@ -16,7 +16,7 @@
             </div>
         </div>
         
-        <div class="col-12 lg:col-6 xl:col-3">
+        <div class="col-span-1">
                 <div class="card mb-0 bg-green-300">
                     <div class="flex justify-content-between mb-3">
                         <div>
@@ -29,7 +29,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 lg:col-6 xl:col-3">
+            <div class="col-span-1">
                 <div class="card mb-0 bg-cyan-100">
                     <div class="flex justify-content-between mb-3">
                         <div>
@@ -42,7 +42,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 lg:col-6 xl:col-3">
+            <div class="col-span-1">
                 <div class="card mb-0 bg-gray-300">
                     <div class="flex justify-content-between mb-3">
                         <div>

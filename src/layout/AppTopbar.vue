@@ -97,7 +97,8 @@ const toggle = (event) => {
 </script>
 
 <template>
-    <div class="container mx-auto layout-topbar">
+    <div class="w-screen">
+    <div class="w-full mx-auto layout-topbar">
         <router-link to="/" class="layout-topbar-logo">
             <img src="@/assets/branding/favicon.svg" alt="logo" />
             <span>Tanglobal</span>
@@ -112,18 +113,15 @@ const toggle = (event) => {
         </button>
 
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
-            <button :model=items class="p-link layout-topbar-button" @click="toggle">
+            <button :model="items" class="p-link layout-topbar-button" @click="toggle">
                 <i class="pi pi-user"></i>
                 <span>Profile</span>
                 <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" />
             </button>
-
-            <!-- <div class="">
-                <Button icon="pi pi-user" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu" class="p-link layout-topbar-button" />
-                <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" />
-            </div> -->
         </div>
     </div>
+</div>
+
 </template>
 
 <style lang="scss" scoped></style>

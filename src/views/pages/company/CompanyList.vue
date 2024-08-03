@@ -1,56 +1,59 @@
-
 <template>
     <div class="grid">
         <div class="col-12">
             <div class="card">
-                <!-- <Toolbar class="mb-4">
-                    <template v-slot:start>
+                <Toolbar class="mb-4">
+                    <template #start>
                         <div class="my-2">
-                            <Button label="New" icon="pi pi-plus" class="mr-2" severity="success" @click="openNew" />
-                            <Button label="Delete" icon="pi pi-trash" severity="danger" @click="confirmDeleteSelected"
-                                :disabled="!selectedProducts || !selectedProducts.length" />
+                            <Button label="Export CSV" icon="pi pi-file" class="mr-2 bg-green-700 px-4 py-2 text-white" @click="exportToCSV" />
+                            <Button label="Export Excel" icon="pi pi-file-excel" class="mr-2 bg-blue-700 px-4 py-2 text-white" @click="exportToExcel" />
                         </div>
                     </template>
-
-                    <template v-slot:end>
-                        <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import"
-                            chooseLabel="Import" class="mr-2 inline-block" />
-                        <Button label="Export" icon="pi pi-upload" severity="help" @click="exportCSV($event)" />
-                    </template>
-                </Toolbar> -->
-
-                <DataTable ref="dt" :value="company" paginator :rows="10">
+                </Toolbar>
+                <DataTable ref="dt" :value="companies" paginator :rows="10" scrollable scrollHeight="flex">
                     <template #header>
                         <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                             <h5 class="m-0">Manage Companies</h5>
                         </div>
                     </template>
 
-                    <!-- <Column selectionMode="multiple" headerStyle="width: 3rem"></Column> -->
-                    <Column field="companyName" header="Company name" :sortable="true" headerStyle="width:20%; min-width:10rem;">
+                    <Column field="companyName" header="Company Name" :sortable="true" headerStyle="width:30%; min-width:10rem;">
+                        <template #header="slotProps">
+                            <div class="p-2">{{ slotProps.header }}</div>
+                        </template>
                     </Column>
 
                     <Column field="comapnyTelephone" header="Phone" :sortable="true" headerStyle="width:20%; min-width:10rem;">
+                        <template #header="slotProps">
+                            <div class="p-2">{{ slotProps.header }}</div>
+                        </template>
                     </Column>
 
                     <Column field="comapnyEmail" header="Email" :sortable="true" headerStyle="width:20%; min-width:10rem;">
+                        <template #header="slotProps">
+                            <div class="p-2">{{ slotProps.header }}</div>
+                        </template>
                     </Column>
 
                     <Column field="comapnyWebsite" header="Website" :sortable="true" headerStyle="width:20%; min-width:10rem;">
+                        <template #header="slotProps">
+                            <div class="p-2">{{ slotProps.header }}</div>
+                        </template>
                     </Column>
-                    <Column field="is_approved" header="Apporoved" :sortable="true" headerStyle="width:20%; min-width:10rem;">
+                    
+                    <Column field="is_approved" header="Approved" :sortable="true" headerStyle="width:20%; min-width:10rem;">
+                        <template #header="slotProps">
+                            <div class="p-2">{{ slotProps.header }}</div>
+                        </template>
                         <template #body="slotProps">
-                         <Tag :severity="slotProps.data.is_approved ? 'success':'danger'">{{ slotProps.data.is_approved ? 'Active' : 'Locked' }}</Tag>
-                         </template>
+                            <Tag :severity="slotProps.data.is_approved ? 'success' : 'danger'" :value="slotProps.data.is_approved ? 'Active' : 'Inactive'" />
+                        </template>
                     </Column>
-
-                    <!-- <Column field="is_active" header="Is active" :sortable="true" headerStyle="width:15%; min-width:10rem;">
-                        <template #body="slotProps">
-                         <Tag :severity="slotProps.data.is_active ? 'success':'danger'">{{ slotProps.data.is_active ? 'Active' : 'Locked' }}</Tag>
-                         </template>
-                    </Column> -->
 
                     <Column headerStyle="min-width:10rem;" header="Actions">
+                        <template #header="slotProps">
+                            <div class="p-2">{{ slotProps.header }}</div>
+                        </template>
                         <template #body="slotProps">
                             <Button icon="pi pi-lock" class="mr-2" severity="success" rounded
                                 @click="lockorUnlockCompany(slotProps.data.id)" />
@@ -62,35 +65,84 @@
             </div>
         </div>
     </div>
-
 </template>
 
 <script setup>
 import { ref, onBeforeMount } from 'vue';
-import apiService from '@/services/apiService'
+import apiService from '@/services/apiService';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Button from 'primevue/button';
+import Tag from 'primevue/tag';
+import Toolbar from 'primevue/toolbar';
+import { utils, writeFile } from 'xlsx';
 
-const company = ref([])
+const companies = ref([]);
 
-const getCargoType = () => {
-    apiService.get('company').then(response => {
-        company.value = response.data
-        console.log(response);
-    }).catch(error => {
-        console.log(error);
-    })
-}
+const getCompanies = async () => {
+    try {
+        const response = await apiService.get('company');
+        companies.value = response.data;
+    } catch (error) {
+        console.error('Error fetching companies:', error);
+    }
+};
 
-const lockorUnlockCompany = (id) => {
-    apiService.patch(`/company/${id}/approve-company/`)
-    .then(response => {
-      console.log('Vehicle approved successfully:', response.data);
-    })
-    .catch(error => {
-      console.error('Error approving vehicle:', error);
-    });   
+const lockorUnlockCompany = async (id) => {
+    try {
+        const response = await apiService.patch(`/company/${id}/approve-company/`);
+        console.log('Company approved successfully:', response.data);
+        await getCompanies(); // Refresh the data
+    } catch (error) {
+        console.error('Error approving company:', error);
+    }
+};
+
+const exportToCSV = () => {
+    const worksheet = utils.json_to_sheet(companies.value);
+    const csvOutput = utils.sheet_to_csv(worksheet);
+    const blob = new Blob([csvOutput], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', 'companies.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
+
+const exportToExcel = () => {
+    const worksheet = utils.json_to_sheet(companies.value);
+    const workbook = utils.book_new();
+    utils.book_append_sheet(workbook, worksheet, 'Companies');
+    writeFile(workbook, 'companies.xlsx');
 };
 
 onBeforeMount(() => {
-    getCargoType();
+    getCompanies();
 });
 </script>
+
+<style scoped>
+@media (max-width: 600px) {
+    .card h5 {
+        font-size: 1rem;
+    }
+
+    .card .p-datatable-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .card .p-button {
+        margin-bottom: 0.5rem;
+    }
+
+    .card .p-datatable-tbody > tr > td {
+        font-size: 0.9rem;
+    }
+
+    .p-datatable-wrapper {
+        overflow-x: auto;
+    }
+}
+</style>

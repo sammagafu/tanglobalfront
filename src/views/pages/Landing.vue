@@ -1,9 +1,6 @@
 <script setup>
-import { useLayout } from '@/layout/composables/layout';
 import { computed } from 'vue';
-import AppConfig from '@/layout/AppConfig.vue';
-
-const { layoutConfig } = useLayout();
+import TopNavBar from '@/components/TopNavBar.vue';
 
 const smoothScroll = (id) => {
     document.querySelector(id).scrollIntoView({
@@ -17,16 +14,17 @@ const logoUrl = computed(() => {
 </script>
 
 <template>
+<TopNavBar></TopNavBar>
     <div class="main font-sans">
         <section
             class="xl:bg-contain bg-top bg-no-repeat -mt-24 pt-24 bg-[url('@/assets/img/background/intersect.svg')]">
             <div class="px-4 mx-auto">
-                <div class="pt-12 text-center">
+                <div class="pt-18 text-center">
                     <div class="max-w-2xl mx-auto mb-8">
                         <h2
                             class="text-3xl lg:text-6xl lg:leading-normal mb-4 font-bold font-heading wow animate__animated animate__fadeIn">
                             Connecting Truck Owners and Shippers for Effortless Logistics</h2>
-                        <p class="text-gray-400 leading-relaxed wow animate__animated animate__fadeIn">Welcome to
+                        <p class="text-gray-600 font-medium leading-relaxed wow animate__animated animate__fadeIn">Welcome to
                             TanGlobal Logistics Group, where we connect truck owners and shippers for effortless
                             logistics. Our platform streamlines the process of transporting goods, ensuring efficiency,
                             transparency, and reliability every step of the way.
@@ -34,9 +32,9 @@ const logoUrl = computed(() => {
                         </p>
                     </div>
                     <div>
-                        <a class="bg-blue-600 text-white py-4 px-8 mr-2 hover-up-2" href="#key-features">Key
+                        <a class="bg-blue-600 text-white py-4 px-8 mr-2 text-xl" href="#key-features">Key
                             Features</a>
-                        <a class="bg-primary py-4 px-8 mr-2 hover-up-2" data-wow-delay=".3s" href="#how-we-work">How We
+                        <a class="bg-primary py-4 px-8 mr-2 text-xl" data-wow-delay=".3s" href="#how-we-work">How We
                             Work?</a>
                     </div>
                 </div>
@@ -118,7 +116,7 @@ const logoUrl = computed(() => {
             </div>
         </section>
         <!--Features-->
-        <section class="py-12 md:py-16 lg:py-32 overflow-x-hidden" id="key-features">
+        <section class="py-12 md:py-16 lg:py-32 overflow-x-hidden" id="features">
             <div class="container px-4 mx-auto">
                 <div class="flex flex-wrap lg:flex-nowrap">
                     <div class="w-full lg:w-1/2">
@@ -278,7 +276,6 @@ const logoUrl = computed(() => {
                         <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all"
                             style="border-radius: 10px">
                             <h3 class="text-900 text-center my-5">Free</h3>
-                            <img src="/demo/images/landing/free.svg" class="w-10 h-10 mx-auto" alt="free" />
                             <div class="my-5 text-center">
                                 <span class="text-5xl font-bold mr-2 text-900">$0</span>
                                 <span class="text-600">per month</span>
@@ -310,7 +307,6 @@ const logoUrl = computed(() => {
                         <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all"
                             style="border-radius: 10px">
                             <h3 class="text-900 text-center my-5">Startup</h3>
-                            <img src="/demo/images/landing/startup.svg" class="w-10 h-10 mx-auto" alt="startup" />
                             <div class="my-5 text-center">
                                 <span class="text-5xl font-bold mr-2 text-900">$1</span>
                                 <span class="text-600">per month</span>
@@ -342,7 +338,6 @@ const logoUrl = computed(() => {
                         <div class="p-3 flex flex-column border-200 pricing-card cursor-pointer border-2 hover:border-primary transition-duration-300 transition-all"
                             style="border-radius: 10px">
                             <h3 class="text-900 text-center my-5">Enterprise</h3>
-                            <img src="/demo/images/landing/enterprise.svg" class="w-10 h-10 mx-auto" alt="enterprise" />
                             <div class="my-5 text-center">
                                 <span class="text-5xl font-bold mr-2 text-900">$999</span>
                                 <span class="text-600">per month</span>
@@ -449,8 +444,29 @@ const logoUrl = computed(() => {
             
         </section>
     </div>
-    <!-- End .main -->
-    <AppConfig simple />
+
+
+
+<footer class="bg-white rounded-lg shadow m-4 dark:bg-gray-800">
+    <div class="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
+      <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">© {{ new Date().getFullYear()}} TanGlobal™. All Rights Reserved.
+    </span>
+    <ul class="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0">
+        <li>
+            <a href="#" class="hover:underline me-4 md:me-6">About</a>
+        </li>
+        <li>
+            <a href="#" class="hover:underline me-4 md:me-6">Privacy Policy</a>
+        </li>
+        <li>
+            <a href="#" class="hover:underline me-4 md:me-6">Licensing</a>
+        </li>
+        <li>
+            <a href="#" class="hover:underline">Contact</a>
+        </li>
+    </ul>
+    </div>
+</footer>
 </template>
 
 <style scoped>

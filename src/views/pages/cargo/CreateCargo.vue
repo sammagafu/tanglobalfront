@@ -3,7 +3,7 @@
         <Toolbar class="mb-4">
             <template v-slot:start>
                 <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
-                <Button label="Delete" icon="pi pi-trash" class="p-button-danger" @click="deleteSelectedCargos" :disabled="!selectedProducts.length" />
+                <Button label="Delete" icon="pi pi-trash" class="p-button-danger" @click="confirmDeleteSelected" :disabled="!selectedProducts.length" />
             </template>
             <template v-slot:end>
                 <FileUpload mode="basic" accept="*" :maxFileSize="5000000" label="Import" chooseLabel="Import" class="mr-2 inline-block" @upload="onDocumentUpload" />
@@ -26,8 +26,13 @@
             <Column field="status" header="Status" :sortable="true" headerStyle="width:10%; min-width:10rem;"></Column>
             <Column field="actions" header="Actions" headerStyle="width:10%; min-width:10rem;">
                 <template #body="slotProps">
-                    <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="editCargo(slotProps.data)" />
-                    <Button icon="pi pi-trash" class="p-button-rounded p-button-danger" @click="deleteCargo(slotProps.data)" />
+                    <div class="flex space-x-2">
+                        <router-link :to="{ name: 'cargo-details', params: { uuid: slotProps.data.uuid } }">
+                        <Button icon="pi pi-search" class="p-button-rounded bg-primary" />
+                    </router-link>
+                    <Button icon="pi pi-pencil" class="p-button-rounded bg-blue-500 text-white" @click="editCargo(slotProps.data)" />
+                    <Button icon="pi pi-trash" class="p-button-rounded bg-red-500 text-white" @click="confirmDeleteCargo(slotProps.data)" />
+                    </div>
                 </template>
             </Column>
         </DataTable>
@@ -42,37 +47,37 @@
                 <div class="p-fluid">
                     <div class="py-2">
                         <label for="cargo">Cargo Name</label>
-                        <InputText id="cargo" v-model="cargo.cargo" required :class="{'p-invalid': submitted && !cargo.cargo}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500" />
+                        <InputText id="cargo" v-model="cargo.cargo" required :class="{'p-invalid': submitted && !cargo.cargo}" />
                         <small v-if="submitted && !cargo.cargo" class="p-error">Cargo name is required.</small>
                     </div>
                     <div class="py-2">
                         <label for="weight">Weight</label>
-                        <input type="number" name="weight" id="weight" v-model="cargo.weight" required :class="{'p-invalid': submitted && !cargo.weight}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500">
+                        <input type="number" name="weight" id="weight" v-model="cargo.weight" required :class="{'p-invalid': submitted && !cargo.weight}" />
                         <small v-if="submitted && !cargo.weight" class="p-error">Weight is required.</small>
                     </div>
                     <div class="py-2">
                         <label for="weight_unit">Weight Unit</label>
-                        <Dropdown id="weight_unit" v-model="cargo.weight_unit" :options="weightUnits" optionLabel="label" optionValue="value" required :class="{'p-invalid': submitted && !cargo.weight_unit}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"/>
+                        <Dropdown id="weight_unit" v-model="cargo.weight_unit" :options="weightUnits" optionLabel="label" optionValue="value" required :class="{'p-invalid': submitted && !cargo.weight_unit}" />
                         <small v-if="submitted && !cargo.weight_unit" class="p-error">Weight unit is required.</small>
                     </div>
                     <div class="py-2">
                         <label for="length">Length</label>
-                        <input type="number" name="length" id="length" v-model="cargo.length" required :class="{'p-invalid': submitted && !cargo.length}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500">
+                        <input type="number" name="length" id="length" v-model="cargo.length" required :class="{'p-invalid': submitted && !cargo.length}" />
                         <small v-if="submitted && !cargo.length" class="p-error">Length is required.</small>
                     </div>
                     <div class="py-2">
                         <label for="width">Width</label>
-                        <input type="number" name="width" id="width" v-model="cargo.width" required :class="{'p-invalid': submitted && !cargo.width}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500">
+                        <input type="number" name="width" id="width" v-model="cargo.width" required :class="{'p-invalid': submitted && !cargo.width}" />
                         <small v-if="submitted && !cargo.width" class="p-error">Width is required.</small>
                     </div>
                     <div class="py-2">
                         <label for="height">Height</label>
-                        <input type="number" name="height" id="height" v-model="cargo.height" required :class="{'p-invalid': submitted && !cargo.height}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500">
+                        <input type="number" name="height" id="height" v-model="cargo.height" required :class="{'p-invalid': submitted && !cargo.height}" />
                         <small v-if="submitted && !cargo.height" class="p-error">Height is required.</small>
                     </div>
                     <div class="py-2">
                         <label for="cargo_type">Cargo Type</label>
-                        <Dropdown id="cargo_type" v-model="cargo.cargo_type" :options="cargoTypeChoices" optionLabel="label" optionValue="value" required :class="{'p-invalid': submitted && !cargo.cargo_type}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"/>
+                        <Dropdown id="cargo_type" v-model="cargo.cargo_type" :options="cargoTypeChoices" optionLabel="label" optionValue="value" required :class="{'p-invalid': submitted && !cargo.cargo_type}" />
                         <small v-if="submitted && !cargo.cargo_type" class="p-error">Cargo type is required.</small>
                     </div>
                     <div class="py-2">
@@ -85,26 +90,26 @@
                     </div>
                     <div class="py-2">
                         <label for="special_handling_instructions">Special Handling Instructions</label>
-                        <Textarea id="special_handling_instructions" v-model="cargo.special_handling_instructions" rows="3" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"/>
+                        <Textarea id="special_handling_instructions" v-model="cargo.special_handling_instructions" rows="3" />
                     </div>
                     <div class="py-2">
                         <label for="origin">Origin</label>
-                        <InputText id="origin" v-model="cargo.origin" required :class="{'p-invalid': submitted && !cargo.origin}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"/>
+                        <InputText id="origin" v-model="cargo.origin" required :class="{'p-invalid': submitted && !cargo.origin}" />
                         <small v-if="submitted && !cargo.origin" class="p-error">Origin is required.</small>
                     </div>
                     <div class="py-2">
                         <label for="destination">Destination</label>
-                        <InputText id="destination" v-model="cargo.destination" required :class="{'p-invalid': submitted && !cargo.destination}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"/>
+                        <InputText id="destination" v-model="cargo.destination" required :class="{'p-invalid': submitted && !cargo.destination}" />
                         <small v-if="submitted && !cargo.destination" class="p-error">Destination is required.</small>
                     </div>
                     <div class="py-2">
                         <label for="receiver_name">Receiver Name</label>
-                        <InputText id="receiver_name" v-model="cargo.receiver_name" required :class="{'p-invalid': submitted && !cargo.receiver_name}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"/>
+                        <InputText id="receiver_name" v-model="cargo.receiver_name" required :class="{'p-invalid': submitted && !cargo.receiver_name}" />
                         <small v-if="submitted && !cargo.receiver_name" class="p-error">Receiver name is required.</small>
                     </div>
                     <div class="py-2">
                         <label for="receiver_contact">Receiver Contact</label>
-                        <InputText id="receiver_contact" v-model="cargo.receiver_contact" required :class="{'p-invalid': submitted && !cargo.receiver_contact}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"/>
+                        <InputText id="receiver_contact" v-model="cargo.receiver_contact" required :class="{'p-invalid': submitted && !cargo.receiver_contact}" />
                         <small v-if="submitted && !cargo.receiver_contact" class="p-error">Receiver contact is required.</small>
                     </div>
                     <div class="py-2">
@@ -159,6 +164,7 @@ const cargo = ref({
     destination: '',
     receiver_name: '',
     receiver_contact: '',
+    status: 'pending',
     cargo_documents: [],
     images: []
 });
@@ -276,25 +282,25 @@ const saveCargo = () => {
     }
 };
 
-const editCargo = (cargo) => {
-    selectedCargo.value = cargo;
-    cargo.value = { ...cargo };
+const editCargo = (cargoData) => {
+    selectedCargo.value = cargoData;
+    cargo.value = { ...cargoData, cargo_documents: [], images: [] };  // Initialize empty arrays for documents and images
     cargoDialog.value = true;
 };
 
-const confirmDeleteCargo = (cargo) => {
+const confirmDeleteCargo = (cargoData) => {
     confirmDialog({
         message: 'Are you sure you want to delete this cargo?',
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
-        accept: () => deleteCargo(cargo),
+        accept: () => deleteCargo(cargoData),
     });
 };
 
-const deleteCargo = (cargo) => {
-    apiService.delete(`cargo/${cargo.uuid}/`)
+const deleteCargo = (cargoData) => {
+    apiService.delete(`cargo/${cargoData.uuid}/`)
         .then(() => {
-            cargos.value = cargos.value.filter(c => c.uuid !== cargo.uuid);
+            cargos.value = cargos.value.filter(c => c.uuid !== cargoData.uuid);
             toast.add({ severity: 'success', summary: 'Success', detail: 'Cargo deleted', life: 3000 });
         })
         .catch(error => {

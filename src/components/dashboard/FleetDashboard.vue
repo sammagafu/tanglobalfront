@@ -1,6 +1,6 @@
 <template>
-    <div class="grid">
-        <div class="col-12 lg:col-6 xl:col-3">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="col-span-1">
             <div class="card mb-0 bg-yellow-300">
                 <div class="flex justify-content-between mb-3">
                     <div>
@@ -14,7 +14,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 lg:col-6 xl:col-3">
+        <div class="col-span-1">
             <div class="card mb-0 bg-green-300">
                 <div class="flex justify-content-between mb-3">
                     <div>
@@ -28,7 +28,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 lg:col-6 xl:col-3">
+        <div class="col-span-1">
             <div class="card mb-0 bg-cyan-100">
                 <div class="flex justify-content-between mb-3">
                     <div>
@@ -42,7 +42,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 lg:col-6 xl:col-3">
+        <div class="col-span-1">
             <div class="card mb-0 bg-gray-300">
                 <div class="flex justify-content-between mb-3">
                     <div>
@@ -58,55 +58,51 @@
         </div>
     </div>
 
-    <div class="grid py-4">
-        <div class="col-12 lg:col-7">
+    <div class="py-4">
+        <div class="col-12">
             <h4>Available Cargos</h4>
             <DataView :value="cargoData" :sortOrder="sortOrder" :sortField="sortField">
-                <!-- <template #header>
-                        <Dropdown v-model="sortKey" :options="sortOptions" optionLabel="label"
-                            placeholder="Sort By Price" @change="onSortChange($event)" />
-                    </template> -->
+                <template #header>
+                    <Dropdown v-model="sortField" :options="sortOptions" optionLabel="label"
+                        placeholder="Sort By" @change="onSortChange($event)" />
+                </template>
                 <template #list="slotProps">
                     <div class="grid grid-nogutter">
-                        <div v-for="(item, index) in slotProps.items" :key="index" class="col-12">
+                        <div v-for="(item, index) in slotProps.items" :key="index" class="col-12 bg-green-50">
                             <div class="flex flex-column sm:flex-row sm:align-items-center p-4 gap-3"
                                 :class="{ 'border-top-1 surface-border': index !== 0 }">
-
-                                <div
-                                    class="flex flex-column md:flex-row justify-content-between md:align-items-center flex-1 gap-4">
-                                    <div
-                                        class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
-                                        <div>
-                                            <span class="font-medium text-secondary text-sm my-4">Cargo
-                                                Information</span>
-                                            <div class="text-lg font-medium text-900">Cargo Name : {{ item.cargo }}
-                                            </div>
-                                            <div class="font-baseline font-medium flex flex-row">From : {{ item.origin
-                                                }}</div>
-                                            <div class="font-baseline font-medium flex flex-row">Flagile : {{
-                                                item.fragile }}</div>
-
+                                <Carousel :value="item.images" :numVisible="1" :numScroll="1">
+                                    <template #item="imageSlot">
+                                        <div v-if="imageSlot.item && imageSlot.item.image">
+                                            <img :src="imageSlot.item.image" class="w-full h-auto" />
                                         </div>
-
+                                        <div v-else>
+                                            <p>No image available</p>
+                                        </div>
+                                    </template>
+                                </Carousel>
+                                <div class="flex flex-column md:flex-row justify-content-between md:align-items-center flex-1 gap-4">
+                                    <div class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
+                                        <div>
+                                            <span class="font-medium text-secondary text-sm my-4">Cargo Information</span>
+                                            <div class="text-lg font-medium text-900">Cargo Name : {{ item.cargo }}</div>
+                                            <div class="font-baseline font-medium flex flex-row">From : {{ item.origin }}</div>
+                                            <div class="font-baseline font-medium flex flex-row">Fragile : {{ item.fragile }}</div>
+                                        </div>
                                     </div>
-                                    <div
-                                        class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
+                                    <div class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
                                         <div>
                                             <span class="font-medium text-secondary text-sm">&nbsp;</span>
-                                            <div class="font-baseline font-medium">Weight : {{ item.weight }} Tons</div>
+                                            <div class="font-baseline font-medium">Weight : {{ item.weight }} {{ item.weight_unit }}</div>
                                             <div class="font-baseline font-medium">To : {{ item.destination }}</div>
-                                            <div class="font-baseline font-medium">Temperature Senistive : {{
-                                                item.temperature_sensitive }}</div>
-
+                                            <div class="font-baseline font-medium">Temperature Sensitive : {{ item.temperature_sensitive }}</div>
                                         </div>
-
                                     </div>
                                     <div class="flex flex-column md:align-items-end gap-5">
-                                        <!-- <span class="text-xl font-semibold text-900">Carrying Capacity{{ item.capacity }} Tons</span> -->
                                         <div class="flex flex-row-reverse md:flex-row gap-2">
-                                            <router-link :to="{ name: 'cargo-details', params: { uuid: item.uuid } }"><Button
-                                                    icon="pi pi-search" outlined></Button></router-link>
-                                            <!-- <Button icon="pi pi-check" label="Approve " class="flex-auto md:flex-initial white-space-nowrap"></Button> -->
+                                            <router-link :to="{ name: 'cargo-details', params: { uuid: item.uuid } }">
+                                                <Button icon="pi pi-search" outlined></Button>
+                                            </router-link>
                                         </div>
                                     </div>
                                 </div>
@@ -119,13 +115,12 @@
         <div class="col-12 lg:col-5">
             <h4>My Updates</h4>
             <Message severity="success" icon="pi pi-bell" v-for="update in updateData" :key="update.index">
-                        <div class="flex flex-row justify-between">
-                            <router-link :to="{name:'update-details',params : {slug:update.slug}}">{{ update.name }}</router-link>
-                        </div>
-                    </Message>
+                <div class="flex flex-row justify-between">
+                    <router-link :to="{name:'update-details',params : {slug:update.slug}}">{{ update.name }}</router-link>
+                </div>
+            </Message>
         </div>
     </div>
-
 </template>
 
 <script setup>
@@ -146,13 +141,30 @@ const props = defineProps({
     },
 });
 
-// Calculate total users
+// Calculate totals
 const totalFleet = computed(() => props.fleetData.length);
 const totalUpdates = computed(() => props.updateData.length);
 const totalCargo = computed(() => props.cargoData.length);
-
-// Calculate completed cargo count
 const completedCargoCount = computed(() => {
     return props.cargoData.filter(item => item.status.toLowerCase() === 'completed').length;
 });
+
+// Sorting functionality
+const sortField = ref('cargo');
+const sortOrder = ref(1);
+
+const sortOptions = [
+    { label: 'Cargo Name', value: 'cargo' },
+    { label: 'Weight', value: 'weight' },
+    { label: 'Origin', value: 'origin' },
+    { label: 'Destination', value: 'destination' }
+];
+
+const onSortChange = (event) => {
+    sortField.value = event.value;
+};
 </script>
+
+<style scoped>
+/* Add any necessary custom styles here */
+</style>

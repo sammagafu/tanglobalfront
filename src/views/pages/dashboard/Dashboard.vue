@@ -1,5 +1,5 @@
 <template v-if="authStore.user">
-    <h2>Welcome {{authStore.user.full_name}}</h2>
+    <h2 class="py-4 font-2xl font-bold">Welcome {{authStore.user.full_name}}</h2>
     <template v-if="authStore.user.is_superuser && authStore.user.is_staff">
         <AdminDashboard :userData="users" :comapnyData="company" :fleetData="fleetData" :updateData="update" :cargoData="cargo" />
     </template>

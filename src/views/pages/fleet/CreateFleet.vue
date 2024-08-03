@@ -6,7 +6,7 @@ import { useAuthStore } from '@/store/authStore'; // Import your auth store
 import apiService from '@/services/apiService'; // Import your API service
 
 const toast = useToast();
-
+const authStore = useAuthStore();
 const fleet = ref([]);
 const productDialog = ref(false);
 const deleteProductDialog = ref(false);
@@ -19,56 +19,38 @@ const filters = ref({});
 const fleetype = ref([]);
 
 // form fields
-const fomu = ref(null)
+const fomu = ref(null);
 const platenumber = ref('');
 const weight = ref(null);
 const selectedFleetType = ref(null);
 const isInsured = ref(null);
 const submitted = ref(false);
 const files = ref(null);
+const company = ref(null);
+const vehicleType = ref(null);
+const capacity = ref(null);
+const isApproved = ref(false);
+const approvedBy = ref(null);
+const manufactureYear = ref(null);
+const lastServiceDate = ref(null);
+const registrationDate = ref(null);
+const color = ref('');
+const model = ref('');
+const make = ref('');
 
 const getSeverity = (product) => {
     switch (product.inventoryStatus) {
         case 'INSTOCK':
             return 'success';
-
         case 'LOWSTOCK':
             return 'warning';
-
         case 'OUTOFSTOCK':
             return 'danger';
-
         default:
             return null;
     }
-}
-
-
-const sortKey = ref();
-const sortOrder = ref();
-const sortField = ref();
-const sortOptions = ref([
-    { label: 'Price High to Low', value: '!price' },
-    { label: 'Price Low to High', value: 'price' },
-]);
-const onSortChange = (event) => {
-    const value = event.value.value;
-    const sortValue = event.value;
-
-    if (value.indexOf('!') === 0) {
-        sortOrder.value = -1;
-        sortField.value = value.substring(1, value.length);
-        sortKey.value = sortValue;
-    }
-    else {
-        sortOrder.value = 1;
-        sortField.value = value;
-        sortKey.value = sortValue;
-    }
 };
 
-
-// method to get all categories
 const getCategories = () => {
     apiService.get('fleet/type')
         .then(response => {
@@ -97,10 +79,19 @@ const saveFleet = () => {
     }
 
     const formData = new FormData(fomu.value);
-    formData.append('platenumber', platenumber.value);
+    formData.append('plate_number', platenumber.value);
     formData.append('capacity', weight.value);
-    formData.append('vehicleTypes', selectedFleetType.value);
+    formData.append('vehicle_type', selectedFleetType.value);
     formData.append('isInsured', isInsured.value);
+    // formData.append('company', company.value);
+    formData.append('vehicleType', vehicleType.value);
+    formData.append('isApproved', isApproved.value);
+    formData.append('manufactureYear', manufactureYear.value);
+    formData.append('lastServiceDate', lastServiceDate.value);
+    formData.append('registrationDate', registrationDate.value);
+    formData.append('color', color.value);
+    formData.append('model', model.value);
+    formData.append('make', make.value);
 
     for (let i = 0; i < files.value.files.length; i++) {
         formData.append('images', files.value.files[i]);
@@ -111,9 +102,19 @@ const saveFleet = () => {
         weight: weight.value,
         selectedFleetType: selectedFleetType.value,
         isInsured: isInsured.value,
+        company: company.value,
+        vehicleType: vehicleType.value,
+        capacity: capacity.value,
+        isApproved: isApproved.value,
+        approvedBy: approvedBy.value,
+        manufactureYear: manufactureYear.value,
+        lastServiceDate: lastServiceDate.value,
+        registrationDate: registrationDate.value,
+        color: color.value,
+        model: model.value,
+        make: make.value,
         files: files.value.files
     });
-
 
     apiService.post('fleet/', formData, {
         headers: {
@@ -142,6 +143,17 @@ const resetForm = () => {
     weight.value = null;
     selectedFleetType.value = null;
     isInsured.value = null;
+    company.value = null;
+    vehicleType.value = null;
+    capacity.value = null;
+    isApproved.value = null;
+    approvedBy.value = null;
+    manufactureYear.value = null;
+    lastServiceDate.value = null;
+    registrationDate.value = null;
+    color.value = null;
+    model.value = null;
+    make.value = null;
     if (files.value) {
         files.value.value = ''; // Clear file input
     }
@@ -152,11 +164,8 @@ onBeforeMount(() => {
     initFilters();
     getCategories();
     getFleet();
+    console.log(authStore.user.company_details);
 });
-
-// const formatCurrency = (value) => {
-//     return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-// };
 
 const openNew = () => {
     product.value = {};
@@ -230,7 +239,6 @@ const initFilters = () => {
     };
 };
 </script>
-
 
 <template>
     <div class="grid">
@@ -327,6 +335,41 @@ const initFilters = () => {
                                     <label for="category2" class="p-2">No</label>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="field" v-if="authStore.user.company_details !== null">
+                            <label for="company">Company</label>
+                            <InputText id="company" v-model.trim="company" placeholder="Company" name="company" />
+                        </div>
+
+                        <div class="field">
+                            <label for="manufactureYear">Manufacture Year</label>
+                            <InputNumber id="manufactureYear" v-model.number="manufactureYear" placeholder="Manufacture Year" name="manufactureYear" />
+                        </div>
+
+                        <div class="field">
+                            <label for="lastServiceDate">Last Service Date</label>
+                            <InputText id="lastServiceDate" v-model="lastServiceDate" placeholder="Last Service Date" name="lastServiceDate" />
+                        </div>
+
+                        <div class="field">
+                            <label for="registrationDate">Registration Date</label>
+                            <InputText id="registrationDate" v-model="registrationDate" placeholder="Registration Date" name="registrationDate" />
+                        </div>
+
+                        <div class="field">
+                            <label for="color">Color</label>
+                            <InputText id="color" v-model.trim="color" placeholder="Color" name="color" />
+                        </div>
+
+                        <div class="field">
+                            <label for="model">Model</label>
+                            <InputText id="model" v-model.trim="model" placeholder="Model" name="model" />
+                        </div>
+
+                        <div class="field">
+                            <label for="make">Make</label>
+                            <InputText id="make" v-model.trim="make" placeholder="Make" name="make" />
                         </div>
 
                         <div class="field">
