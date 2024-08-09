@@ -1,9 +1,9 @@
 <script setup>
 import { FilterMatchMode } from 'primevue/api';
-import { ref, onMounted, onBeforeMount } from 'vue';
+import { ref, onBeforeMount } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import { useAuthStore } from '@/store/authStore'; // Import your auth store
-import apiService from '@/services/apiService'; // Import your API service
+import { useAuthStore } from '@/store/authStore';
+import apiService from '@/services/apiService';
 
 const toast = useToast();
 const authStore = useAuthStore();
@@ -15,11 +15,9 @@ const product = ref({});
 const selectedProducts = ref([]);
 const dt = ref(null);
 const filters = ref({});
-
 const fleetype = ref([]);
 
-// form fields
-const fomu = ref(null);
+// Form fields
 const platenumber = ref('');
 const weight = ref(null);
 const selectedFleetType = ref(null);
@@ -38,8 +36,8 @@ const color = ref('');
 const model = ref('');
 const make = ref('');
 
-const getSeverity = (product) => {
-    switch (product.inventoryStatus) {
+const getSeverity = (status) => {
+    switch (status) {
         case 'INSTOCK':
             return 'success';
         case 'LOWSTOCK':
@@ -51,39 +49,36 @@ const getSeverity = (product) => {
     }
 };
 
-const getCategories = () => {
-    apiService.get('fleet/type')
-        .then(response => {
-            fleetype.value = response.data;
-        })
-        .catch(error => {
-            console.log(error);
-        });
+const getCategories = async () => {
+    try {
+        const response = await apiService.get('fleet/type');
+        fleetype.value = response.data;
+    } catch (error) {
+        console.error('Error fetching fleet types:', error);
+    }
 };
 
-const getFleet = () => {
-    apiService.get('fleet/')
-        .then(response => {
-            fleet.value = response.data;
-            console.log(fleet.value);
-        })
-        .catch(error => {
-            console.log(error);
-        });
+const getFleet = async () => {
+    try {
+        const response = await apiService.get('fleet/my-vehicles/');
+        fleet.value = response.data;
+    } catch (error) {
+        console.error('Error fetching fleet:', error);
+    }
 };
 
-const saveFleet = () => {
+const saveFleet = async () => {
     submitted.value = true;
     if (!platenumber.value || !weight.value || !selectedFleetType.value) {
         return;
     }
 
-    const formData = new FormData(fomu.value);
+    const formData = new FormData();
     formData.append('plate_number', platenumber.value);
     formData.append('capacity', weight.value);
     formData.append('vehicle_type', selectedFleetType.value);
     formData.append('isInsured', isInsured.value);
-    // formData.append('company', company.value);
+    formData.append('company', company.value);
     formData.append('vehicleType', vehicleType.value);
     formData.append('isApproved', isApproved.value);
     formData.append('manufactureYear', manufactureYear.value);
@@ -93,48 +88,29 @@ const saveFleet = () => {
     formData.append('model', model.value);
     formData.append('make', make.value);
 
-    for (let i = 0; i < files.value.files.length; i++) {
-        formData.append('images', files.value.files[i]);
+    if (files.value && files.value.files.length > 0) {
+        for (let i = 0; i < files.value.files.length; i++) {
+            formData.append('images', files.value.files[i]);
+        }
     }
 
-    console.log('Form submitted', {
-        platenumber: platenumber.value,
-        weight: weight.value,
-        selectedFleetType: selectedFleetType.value,
-        isInsured: isInsured.value,
-        company: company.value,
-        vehicleType: vehicleType.value,
-        capacity: capacity.value,
-        isApproved: isApproved.value,
-        approvedBy: approvedBy.value,
-        manufactureYear: manufactureYear.value,
-        lastServiceDate: lastServiceDate.value,
-        registrationDate: registrationDate.value,
-        color: color.value,
-        model: model.value,
-        make: make.value,
-        files: files.value.files
-    });
-
-    apiService.post('fleet/', formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    })
-        .then(response => {
-            toast.add({ severity: 'success', summary: 'Successful', detail: 'Fleet saved successfully', life: 3000 });
-            getFleet();
-            productDialog.value = false;
-            resetForm();
-        })
-        .catch(error => {
-            console.error('Error saving fleet:', error);
-            toast.add({ severity: 'error', summary: 'Error', detail: 'Error saving fleet', life: 3000 });
+    try {
+        await apiService.post('fleet/', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
         });
+        toast.add({ severity: 'success', summary: 'Successful', detail: 'Fleet saved successfully', life: 3000 });
+        getFleet();
+        productDialog.value = false;
+        resetForm();
+    } catch (error) {
+        console.error('Error saving fleet:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Error saving fleet', life: 3000 });
+    }
 };
 
 const onUpload = (event) => {
-    console.log('Files selected:', event.target.files);
     files.value = event.target;
 };
 
@@ -151,21 +127,14 @@ const resetForm = () => {
     manufactureYear.value = null;
     lastServiceDate.value = null;
     registrationDate.value = null;
-    color.value = null;
-    model.value = null;
-    make.value = null;
+    color.value = '';
+    model.value = '';
+    make.value = '';
     if (files.value) {
-        files.value.value = ''; // Clear file input
+        files.value.value = '';
     }
     submitted.value = false;
 };
-
-onBeforeMount(() => {
-    initFilters();
-    getCategories();
-    getFleet();
-    console.log(authStore.user.company_details);
-});
 
 const openNew = () => {
     product.value = {};
@@ -189,26 +158,16 @@ const confirmDeleteProduct = (productToDelete) => {
     deleteProductDialog.value = true;
 };
 
-const deleteProduct = () => {
-    apiService.delete(`fleet/${product.value.id}`)
-        .then(response => {
-            toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
-            getFleet();
-            deleteProductDialog.value = false;
-        })
-        .catch(error => {
-            console.error('Error deleting product:', error);
-            toast.add({ severity: 'error', summary: 'Error', detail: 'Error deleting product', life: 3000 });
-        });
-};
-
-const createId = () => {
-    let id = '';
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 5; i++) {
-        id += chars.charAt(Math.floor(Math.random() * chars.length));
+const deleteProduct = async () => {
+    try {
+        await apiService.delete(`fleet/${product.value.id}`);
+        toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
+        getFleet();
+        deleteProductDialog.value = false;
+    } catch (error) {
+        console.error('Error deleting product:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Error deleting product', life: 3000 });
     }
-    return id;
 };
 
 const exportCSV = () => {
@@ -219,26 +178,34 @@ const confirmDeleteSelected = () => {
     deleteProductsDialog.value = true;
 };
 
-const deleteSelectedProducts = () => {
-    selectedProducts.value.forEach(product => {
-        apiService.delete(`fleet/${product.id}`)
-            .catch(error => {
-                console.error('Error deleting product:', error);
-            });
-    });
-
-    toast.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
-    getFleet();
-    deleteProductsDialog.value = false;
-    selectedProducts.value = [];
+const deleteSelectedProducts = async () => {
+    try {
+        for (let product of selectedProducts.value) {
+            await apiService.delete(`fleet/${product.id}`);
+        }
+        toast.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
+        getFleet();
+        deleteProductsDialog.value = false;
+        selectedProducts.value = [];
+    } catch (error) {
+        console.error('Error deleting selected products:', error);
+    }
 };
 
 const initFilters = () => {
     filters.value = {
-        global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
     };
 };
+
+onBeforeMount(() => {
+    initFilters();
+    getCategories();
+    getFleet();
+    console.log(authStore.user.company_details);
+});
 </script>
+
 
 <template>
     <div class="grid">
@@ -263,28 +230,42 @@ const initFilters = () => {
                 <DataView :value="fleet" :sortOrder="sortOrder" :sortField="sortField">
                     <template #header>
                         <Dropdown v-model="sortKey" :options="sortOptions" optionLabel="label"
-                            placeholder="Sort By Price" @change="onSortChange($event)" />
+                            placeholder="Sort By" @change="onSortChange($event)" />
                     </template>
                     <template #list="slotProps">
                         <div class="grid grid-nogutter">
                             <div v-for="(item, index) in slotProps.items" :key="index" class="col-12">
                                 <div class="flex flex-column sm:flex-row sm:align-items-center p-4 gap-3"
                                     :class="{ 'border-top-1 surface-border': index !== 0 }">
-                                
-                                    <div
-                                        class="flex flex-column md:flex-row justify-content-between md:align-items-center flex-1 gap-4">
-                                        <div
-                                            class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
+                                    
+                                    <div class="md:w-40 relative">
+                                        <img
+                                            v-if="item.images && item.images.length > 0"
+                                            :src="item.images[0].image" 
+                                            class="block xl:block mx-auto rounded w-full"
+                                            :alt="item.platenumber"
+                                        />
+                                        <img
+                                            v-else
+                                            src="https://via.placeholder.com/300"
+                                            class="block xl:block mx-auto rounded w-full"
+                                            alt="No Image Available"
+                                        />
+                                    </div>
+
+                                    <div class="flex flex-column md:flex-row justify-content-between md:align-items-center flex-1 gap-4">
+                                        <div class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
                                             <div>
                                                 <span class="font-medium text-secondary text-sm">Car Plate Number</span>
                                                 <div class="text-lg font-medium text-900 mt-2">{{ item.platenumber }}</div>
-                                                <div class="text-lg font-medium text-900">Carrying Capacity{{ item.capacity }} Tons</div>
-                                                
+                                                <div class="text-lg font-medium text-900">Carrying Capacity: {{ item.capacity }} Tons</div>
                                             </div>
                                         </div>
                                         <div class="flex flex-column md:align-items-end gap-5">
                                             <div class="flex flex-row-reverse md:flex-row gap-2">
-                                                <router-link :to="{name:'fleet-detail',params : {fleetnumber:item.id}}"><Button icon="pi pi-search" outlined></Button></router-link>
+                                                <router-link :to="{name:'fleet-detail', params: {fleetnumber: item.id}}">
+                                                    <Button icon="pi pi-search" outlined></Button>
+                                                </router-link>
                                             </div>
                                         </div>
                                     </div>
@@ -294,80 +275,67 @@ const initFilters = () => {
                     </template>
                 </DataView>
 
-                <Dialog v-model:visible="productDialog" :style="{ width: '650px' }" header="Create Cargo" :modal="true"
+                <Dialog v-model:visible="productDialog" :style="{ width: '650px' }" header="Create Fleet" :modal="true"
                     class="p-fluid">
                     <form @submit.prevent="saveFleet" ref="fomu">
                         <div class="field">
                             <label for="platenumber">Fleet Plate Number</label>
                             <InputText id="platenumber" v-model.trim="platenumber" required autofocus
-                                :class="{ 'p-invalid': submitted && !platenumber }" placeholder="T123DZB"
-                                name="platenumber" />
-                            <small class="p-invalid" v-if="submitted && !platenumber">Fleet plate number is
-                                required.</small>
+                                :class="{ 'p-invalid': submitted && !platenumber }" placeholder="T123DZB" />
+                            <small class="p-invalid" v-if="submitted && !platenumber">Fleet plate number is required.</small>
                         </div>
                         <div class="field">
                             <label for="capacity">Carrying Capacity</label>
                             <InputNumber id="capacity" v-model.number="weight" required
-                                :class="{ 'p-invalid': submitted && !weight }" placeholder="13" name="capacity" />
+                                :class="{ 'p-invalid': submitted && !weight }" placeholder="13" />
                             <small class="p-invalid" v-if="submitted && !weight">Carrying capacity is required.</small>
                         </div>
-
                         <div class="field">
                             <label for="vehicleType">Fleet Type</label>
                             <Dropdown id="vehicleType" v-model="selectedFleetType" :options="fleetype"
-                                optionLabel="name" name="vehicleType" placeholder="Select Fleet Type"
-                                optionValue="id" />
+                                optionLabel="name" placeholder="Select Fleet Type" />
                         </div>
-
                         <div class="field">
                             <label class="mb-3">Is Insured?</label>
                             <div class="formgrid grid">
                                 <div class="field-radiobutton col-6">
-                                    <RadioButton id="category1" name="isInsuared" value="true" v-model="isInsured" />
-                                    <label for="category1" class="p-2">Yes</label>
+                                    <RadioButton id="insuredYes" name="isInsured" value="true" v-model="isInsured" />
+                                    <label for="insuredYes" class="p-2">Yes</label>
                                 </div>
                                 <div class="field-radiobutton col-6">
-                                    <RadioButton id="category2" name="isInsured" value="false" v-model="isInsured" />
-                                    <label for="category2" class="p-2">No</label>
+                                    <RadioButton id="insuredNo" name="isInsured" value="false" v-model="isInsured" />
+                                    <label for="insuredNo" class="p-2">No</label>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="field" v-if="authStore.user.company_details !== null">
+                        <div class="field" v-if="authStore.user.company_details">
                             <label for="company">Company</label>
-                            <InputText id="company" v-model.trim="company" placeholder="Company" name="company" />
+                            <InputText id="company" v-model.trim="company" placeholder="Company" />
                         </div>
-
                         <div class="field">
                             <label for="manufactureYear">Manufacture Year</label>
-                            <InputNumber id="manufactureYear" v-model.number="manufactureYear" placeholder="Manufacture Year" name="manufactureYear" />
+                            <InputNumber id="manufactureYear" v-model.number="manufactureYear" placeholder="Manufacture Year" />
                         </div>
-
                         <div class="field">
                             <label for="lastServiceDate">Last Service Date</label>
-                            <InputText id="lastServiceDate" v-model="lastServiceDate" placeholder="Last Service Date" name="lastServiceDate" />
+                            <InputText id="lastServiceDate" v-model="lastServiceDate" placeholder="Last Service Date" />
                         </div>
-
                         <div class="field">
                             <label for="registrationDate">Registration Date</label>
-                            <InputText id="registrationDate" v-model="registrationDate" placeholder="Registration Date" name="registrationDate" />
+                            <InputText id="registrationDate" v-model="registrationDate" placeholder="Registration Date" />
                         </div>
-
                         <div class="field">
                             <label for="color">Color</label>
-                            <InputText id="color" v-model.trim="color" placeholder="Color" name="color" />
+                            <InputText id="color" v-model.trim="color" placeholder="Color" />
                         </div>
-
                         <div class="field">
                             <label for="model">Model</label>
-                            <InputText id="model" v-model.trim="model" placeholder="Model" name="model" />
+                            <InputText id="model" v-model.trim="model" placeholder="Model" />
                         </div>
-
                         <div class="field">
                             <label for="make">Make</label>
-                            <InputText id="make" v-model.trim="make" placeholder="Make" name="make" />
+                            <InputText id="make" v-model.trim="make" placeholder="Make" />
                         </div>
-
                         <div class="field">
                             <div class="flex items-center justify-center w-full">
                                 <label for="dropzone-file"
@@ -385,12 +353,10 @@ const initFilters = () => {
                                         <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX.
                                             800x400px)</p>
                                     </div>
-                                    <input id="dropzone-file" ref="files" type="file" class="hidden" name="images"
-                                        @change="onUpload" multiple />
+                                    <input id="dropzone-file" ref="files" type="file" class="hidden" @change="onUpload" multiple />
                                 </label>
                             </div>
                         </div>
-
                         <div class="mt-3">
                             <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" class="mr-2" />
                             <Button label="Save" icon="pi pi-check" type="submit" class="ml-2" />
@@ -402,7 +368,7 @@ const initFilters = () => {
                     :modal="true">
                     <div class="flex align-items-center justify-content-center">
                         <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                        <span v-if="product">Are you sure you want to delete <b>{{ product.name }}</b>?</span>
+                        <span v-if="product">Are you sure you want to delete <b>{{ product.platenumber }}</b>?</span>
                     </div>
                     <template #footer>
                         <Button label="No" icon="pi pi-times" text @click="deleteProductDialog = false" />

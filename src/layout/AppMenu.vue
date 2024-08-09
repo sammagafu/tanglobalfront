@@ -17,7 +17,7 @@ const fleetCompany = ref([
             {
                 label: 'Available Cargo',
                 icon: 'pi pi-fw pi-car',
-                to: '/cargo'
+                to: '/cargo/available'
             },
         ]
     },
@@ -25,12 +25,11 @@ const fleetCompany = ref([
     {
         label: 'Fleet',
         icon: 'pi pi-fw pi-bookmark',
-        // to: '/pages',
         items: [
             {
                 label: 'My Fleet',
                 icon: 'pi pi-fw pi-car',
-                to: '/fleet'
+                to: '/fleet/my-fleet'
             },
         ]
     }
@@ -51,7 +50,19 @@ const individualModel = ref([
             {
                 label: 'My Fleet',
                 icon: 'pi pi-fw pi-car',
-                to: '/fleet'
+                to: '/fleet/my-fleet'
+            },
+        ]
+    },
+    {
+        label: 'Cargo',
+        icon: 'pi pi-fw pi-box',
+        to: '/cargo',
+        items: [
+            {
+                label: 'Available Cargo',
+                icon: 'pi pi-fw pi-box',
+                to: { name: 'available-cargo' }
             },
         ]
     },
@@ -67,24 +78,22 @@ const adminMenu = ref([
     {
         label: 'User Management',
         icon: 'pi pi-fw pi-briefcase',
-        to: '/cargo',
         items: [
             {
                 label: 'Users',
                 icon: 'pi pi-fw pi-user',
-                to: '/users/'
+                to: '/admin/users/'
             },
         ]
     },
     {
         label: 'Company Management',
         icon: 'pi pi-fw pi-briefcase',
-        to: '/cargo',
         items: [
             {
                 label: 'Companies',
                 icon: 'pi pi-fw pi-briefcase',
-                to: '/company'
+                to: '/admin/companies/'
             },
         ]
     },
@@ -108,12 +117,11 @@ const adminMenu = ref([
     {
         label: 'Manage Fleet',
         icon: 'pi pi-fw pi-briefcase',
-        to: '/fleet/',
         items: [
             {
                 label: 'Fleets',
                 icon: 'pi pi-fw pi-car',
-                to: '/fleet'
+                to: '/admin/fleet'
             },
             {
                 label: 'Fleets Types',

@@ -33,17 +33,17 @@
                                         <div
                                             class="flex flex-row md:flex-column justify-content-between align-items-start gap-2">
                                             <div>
-                                                <span class="font-medium text-secondary text-sm">{{ item.name }}</span>
-                                                <div class="text-lg font-medium text-900 mt-2">{{ item.content }}</div>
+                                                <span class="font-medium text-primary">{{ item.name }}</span>
+                                                <div class="text-lg font-medium text-900 mt-2" v-html="item.content"></div>
                                             </div>
                                         </div>
                                         <div class="flex flex-column md:align-items-end gap-5">
-                                            <div class="flex flex-row-reverse md:flex-row gap-2">
-                                                <Button icon="pi pi-pencil" label="Edit" class="flex-auto md:flex-initial white-space-nowrap" @click="editProduct(item)"></Button>
+                                            <div class="flex flex-row-reverse md:flex-row gap-2 bg-slate-100">
+                                                <Button icon="pi pi-pencil" label="Edit" class="flex-auto md:flex-initial white-space-nowrap bg-blue-700 px-4 py-2 text-white" @click="editProduct(item)"></Button>
                                                 <div v-if="item.is_approved !== true">
-                                                    <Button icon="pi pi-check" label="Approve" class="flex-auto md:flex-initial white-space-nowrap" @click="approveVehicle(item.slug)"></Button>
+                                                    <Button icon="pi pi-check" label="Approve" class="flex-auto md:flex-initial white-space-nowrap bg-primary px-4 py-2 text-white" @click="approveVehicle(item.slug)"></Button>
                                                 </div>
-                                                <router-link :to="{name:'update-details', params: {slug:item.slug}}"> <Button icon="pi pi-search" outlined></Button></router-link>
+                                                <router-link :to="{name:'update-details', params: {slug:item.slug}}"> <Button icon="pi pi-search" outlined class="bg-black px-4 py-2 text-white"></Button></router-link>
                                             </div>
                                         </div>
                                     </div>
@@ -461,3 +461,4 @@ button.pi.pi-check {
     overflow: auto;
 }
 </style>
+ 

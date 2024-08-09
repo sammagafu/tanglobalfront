@@ -21,6 +21,31 @@ const router = createRouter({
             ]
         },
         {
+            path: '/admin/',
+            component: AppLayout,
+            meta: {
+                requiresAuth: true // Add meta field for authentication guard
+              },
+            children:[
+                {
+                    path: 'users',
+                    name: 'users-home',
+                    component: () => import('@/views/pages/users/ManageUsers.vue')
+                },
+                {
+                    path: 'companies',
+                    name: 'company-home',
+                    component: () => import('@/views/pages/company/CompanyList.vue'),
+                    
+                },
+                {
+                    path: 'fleet',
+                    name: 'admin-fleet',
+                    component: () => import('@/views/pages/fleet/AdminFleet.vue')
+                },
+            ]
+        },
+        {
             path:'/cargo',
             name:'cargo-index',
             component: AppLayout,
@@ -32,6 +57,11 @@ const router = createRouter({
                     path: '',
                     name: 'cargo-home',
                     component: () => import('@/views/pages/cargo/CreateCargo.vue')
+                },
+                {
+                    path: 'available',
+                    name: 'available-cargo',
+                    component: () => import('@/views/pages/cargo/AvailabelCargo.vue')
                 },
                 {
                     path: ':uuid',
@@ -59,6 +89,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/fleet/CreateFleet.vue')
                 },
                 {
+                    path: 'my-fleet',
+                    name: 'my-home',
+                    component: () => import('@/views/pages/fleet/MyFleets.vue')
+                },
+                {
                     path: 'create',
                     name: 'fleet-create',
                     component: () => import('@/views/pages/fleet/FleetManage.vue')
@@ -67,39 +102,6 @@ const router = createRouter({
                     path: ':fleetnumber',
                     name: 'fleet-detail',
                     component: () => import('@/views/pages/fleet/FleetDetailView.vue')
-                },
-            ]
-        },
-        {
-            path:'/users',
-            name:'users-index',
-            component: AppLayout,
-            meta: {
-                requiresAuth: true // Add meta field for authentication guard
-              },
-            children :[
-                {
-                    path: '',
-                    name: 'users-home',
-                    // src/views/pages/cargo/CargoCategoryManagement.vue
-                    component: () => import('@/views/pages/users/ManageUsers.vue')
-                },
-            ]
-        },
-        {
-            path:'/company',
-            name:'company-index',
-            component: AppLayout,
-            meta: {
-                requiresAuth: true // Add meta field for authentication guard
-              },
-            children :[
-                {
-                    path: '',
-                    name: 'company-home',
-                    // src/views/pages/cargo/CargoCategoryManagement.vue
-                    component: () => import('@/views/pages/company/CompanyList.vue'),
-                    
                 },
             ]
         },
@@ -200,6 +202,7 @@ const router = createRouter({
             name: 'forgotpassword',
             component: () => import('@/views/pages/auth/ForgotPassword.vue')
         },
+       
     ]
 });
 

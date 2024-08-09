@@ -4,13 +4,13 @@
         <AdminDashboard :userData="users" :comapnyData="company" :fleetData="fleetData" :updateData="update" :cargoData="cargo" />
     </template>
     <template v-else-if="authStore.user.is_individual">
-        <CargoDashboard />
+        <CargoDashboard :fleetData="myFleet" :updateData="update" :cargoData="cargo"/>
     </template>
     <template v-else-if="authStore.user.is_company && authStore.user.company_details.company_type === 'Cargo Company'">
-        <CargoDashboard />
+        <CargoDashboard :fleetData="myFleet" :updateData="update" :cargoData="cargo"/>
     </template>
     <template v-else-if="authStore.user.is_company && authStore.user.company_details.company_type === 'Fleet Company'">
-        <FleetDashboard :fleetData="fleetData" :updateData="update" :cargoData="cargo"/>
+        <FleetDashboard :fleetData="myFleet" :updateData="update" :cargoData="cargo"/>
     </template>
 </template>
 
@@ -26,6 +26,7 @@ const authStore = useAuthStore();
 const users  = ref ([])
 const company  = ref ([])
 const fleetData  = ref ([])
+const myfleet  = ref ([])
 const update  = ref ([])
 const cargo  = ref ([])
 
@@ -61,7 +62,6 @@ const getUpdates = () => {
     apiService.get('update/')
         .then(response => {
             update.value = response.data;
-            console.log(update.value);
         })
         .catch(error => {
             console.log(error);
@@ -72,7 +72,6 @@ const getUpdates = () => {
 const getCategories = function () {
     apiService.get('cargo/')
         .then(async (response) => {
-            console.log(response.data);
             cargo.value = await response.data;
         })
         .catch(error => {
@@ -80,9 +79,21 @@ const getCategories = function () {
         });
 };
 
+const myFleet = function () {
+    apiService.get('fleet/my-vehicles/')
+        .then(async (response) => {
+            myfleet.value = await response.data;
+        })
+        .catch(error => {
+            console.log(error);
+        });
+};
+
+
 
 onBeforeMount(()=>{
     getUsers();
+    myFleet();
     getcompanies();
     getFleet();
     getUpdates();

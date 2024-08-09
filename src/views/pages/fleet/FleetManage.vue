@@ -24,9 +24,9 @@
                     </Column>
                     <Column headerStyle="min-width:10rem;">
                         <template #body="slotProps">
-                            <Button icon="pi pi-pencil" class="mr-2" severity="success" rounded
+                            <Button icon="pi pi-pencil" class="m-2 bg-blue-700 text-white" severity="success" rounded
                                 @click="editCategory(slotProps.data)" />
-                            <Button icon="pi pi-trash" class="mt-2" severity="warning" rounded
+                            <Button icon="pi pi-trash" class="m-2 bg-red-700 text-white" severity="warning" rounded
                                 @click="confirmDeleteCategory(slotProps.data)" />
                         </template>
                     </Column>
