@@ -2,8 +2,8 @@ import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'vue-router';
 
-// const baseURL = 'http://tanglobal.co.tz/api/v1/';
-const baseURL = 'http://localhost:8000/api/v1/';
+const baseURL = 'http://tanglobal.co.tz/api/v1/';
+// const baseURL = 'http://localhost:8000/api/v1/';
 
 const axiosInstance = axios.create({
   baseURL: baseURL,
