@@ -10,7 +10,7 @@
     />
   </template>
   <template v-else-if="authStore.user.is_individual">
-    <CargoDashboard :fleetData="myFleet" :updateData="update" :cargoData="cargo" />
+    <CargoDashboard :fleetData="myFleetData" :updateData="update" :cargoData="cargo" />
   </template>
   <template
     v-else-if="
@@ -18,7 +18,7 @@
       authStore.user.company_details.company_type === 'Cargo Company'
     "
   >
-    <CargoDashboard :fleetData="myFleet" :updateData="update" :cargoData="cargo" />
+    <CargoDashboard :fleetData="myFleetData" :updateData="update" :cargoData="cargo" />
   </template>
   <template
     v-else-if="
@@ -26,7 +26,7 @@
       authStore.user.company_details.company_type === 'Fleet Company'
     "
   >
-    <FleetDashboard :fleetData="myFleet" :updateData="update" :cargoData="cargo" />
+    <FleetDashboard :fleetData="myFleetData" :updateData="update" :cargoData="cargo" />
   </template>
 </template>
 
@@ -41,8 +41,8 @@ import { useAuthStore } from "@/store/authStore"; // Import your auth store
 const authStore = useAuthStore();
 const users = ref([]);
 const company = ref([]);
-const fleetData = ref([]);
-const myFleetData = ref([]);
+const fleetData = ref([]); // Properly initialized as an empty array
+const myFleetData = ref([]); // Ensure myFleetData is correctly initialized
 const update = ref([]);
 const cargo = ref([]);
 
@@ -112,7 +112,7 @@ const fetchMyFleet = () => {
   apiService
     .get("fleet/my-vehicles/")
     .then((response) => {
-      myFleetData.value = response.data;
+      myFleetData.value = response.data; // Set the fetched data correctly
     })
     .catch((error) => {
       console.log(error);
