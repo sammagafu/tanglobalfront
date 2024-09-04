@@ -1,3 +1,4 @@
+// authStore.js
 import { defineStore } from 'pinia';
 import apiService from '@/services/apiService';
 import { useRouter } from 'vue-router';
@@ -9,7 +10,7 @@ export const useAuthStore = defineStore({
     refreshToken: localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken') || '',
     rememberMe: localStorage.getItem('rememberMe') === 'true' || false,
     user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')) : null,
-    authError: null,  // Add state to store authentication errors
+    authError: null,  // Store authentication errors
   }),
 
   getters: {
@@ -27,7 +28,7 @@ export const useAuthStore = defineStore({
     },
     getAuthError(state) {
       return state.authError;  // Getter for authentication errors
-    }
+    },
   },
 
   actions: {
@@ -39,6 +40,7 @@ export const useAuthStore = defineStore({
         this.setTokens(response.data.access, response.data.refresh, rememberMe);
         apiService.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
 
+        // Fetch the logged-in user's data
         const userResponse = await apiService.get('auth/users/me/');
         this.setUser(userResponse.data);
 
@@ -82,9 +84,6 @@ export const useAuthStore = defineStore({
       } else {
         sessionStorage.setItem('accessToken', accessToken);
         sessionStorage.setItem('refreshToken', refreshToken);
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('rememberMe');
       }
     },
 

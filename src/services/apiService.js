@@ -1,9 +1,9 @@
+// apiService.js
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'vue-router';
 
-const baseURL = 'http://tanglobal.co.tz/api/v1/';
-// const baseURL = 'http://localhost:8000/api/v1/';
+const baseURL = 'https://tanglobal.co.tz/api/v1/';
 
 const axiosInstance = axios.create({
   baseURL: baseURL,
@@ -37,14 +37,20 @@ axiosInstance.interceptors.response.use(
 
       if (authStore.refreshToken) {
         try {
+          // Attempt to refresh the access token using the refresh token
           const response = await axios.post(`${baseURL}auth/token/refresh/`, {
             refresh: authStore.refreshToken,
           });
           const newToken = response.data.access;
+          // Update tokens in the store and headers
           authStore.setTokens(newToken, authStore.refreshToken, authStore.rememberMe);
+          axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
           originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
+
+          // Retry the original request with the new token
           return axiosInstance(originalRequest);
         } catch (e) {
+          // If the token refresh fails, logout and redirect to login page
           authStore.logout();
           router.push({ name: 'login' });
           return Promise.reject(e);
